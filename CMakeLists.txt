@@ -10,6 +10,9 @@ add_executable(GLWFPractice
         Source/glad.c
         Header/GLUtils.h
         Source/GLUtils.cpp
+        Header/Geometry.h
+        Source/Geometry.cpp
+        Header/Vector3.h
 )
 
 target_include_directories(GLWFPractice PRIVATE
