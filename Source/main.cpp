@@ -53,7 +53,8 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    std:: vector<Vector3> grid = makeGrid(16);
+    std:: vector<Vector3> grid = makeGrid(4);
+    std::vector<Vector3> square = makeSquare();
 
     GLFWwindow *window = createWindow();
     glfwMakeContextCurrent(window);
@@ -62,8 +63,8 @@ int main() {
         return -1;
     }
 
-    GLuint gridVAO = 0;
-    GLuint gridVBO = 0;
+    GLuint gridVAO = 0, squareVAO = 0;
+    GLuint gridVBO = 0, squareVBO = 0;
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertexShader, nullptr);
@@ -88,11 +89,17 @@ int main() {
 
     glGenVertexArrays(1, &gridVAO);
     glGenBuffers(1, &gridVBO);
+    glGenVertexArrays(1, &squareVAO);
+    glGenBuffers(1, &squareVBO);
+
 
     glBindVertexArray(gridVAO);
     glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+    glBindVertexArray(squareVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, squareVBO);
 
     glBufferData(GL_ARRAY_BUFFER, grid.size() * sizeof(Vector3), grid.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, square.size() * sizeof(Vector3), square.data(), GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
     glEnableVertexAttribArray(0);
@@ -109,12 +116,19 @@ int main() {
         glUseProgram(shaderProgram);
         glUniform2f(uResolutionLoc, w, h);
 
-        glBindVertexArray(gridVAO);
-        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        // glBindVertexArray(gridVAO);
+        // glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        // glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        // glUniform1f(uScaleLoc, 1.0f);
+        //
+        // glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(grid.size()));
+
+        glBindVertexArray(squareVAO);
+        glUniform3f(uColorLoc, 0.0f, 1.0f, 1.0f);
         glUniform2f(uOffsetLoc, 0.0f, 0.0f);
         glUniform1f(uScaleLoc, 1.0f);
 
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(grid.size()));
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(square.size()));
 
         glfwPollEvents();
         glfwSwapBuffers(window);

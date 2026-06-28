@@ -11,4 +11,6 @@
 
 std:: vector<Vector3> makeGrid(int slices);
 
+std::vector<Vector3> makeSquare();
+
 #endif //GLFWPRACTICE_GEOMETRY_H
