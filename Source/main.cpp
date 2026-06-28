@@ -109,10 +109,11 @@ int main() {
     glBindVertexArray(0);
 
     Matrix mat;
-    Matrix pMat(4, 5);
+    mat.set(0,0,1);
+    mat.set(1,1,1);
+    mat.set(2,2,1);
+    mat.set(3,3,1);
     mat.print();
-    std:: cout << std:: endl;
-    pMat.print();
 
     return 0;
 
