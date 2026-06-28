@@ -12,11 +12,12 @@ class Matrix {
     int row;
     std::vector<std::vector<float>> data;
 
+public:
     Matrix();
-    Matrix(int row, int col);
+    Matrix(int passedRow, int passedCol);
 
-    void set(int row, int col, float val);
-    void get(int row, int col);
+    void set(int r, int c, float val);
+    float get(int r, int c);
 
     void print();
 };

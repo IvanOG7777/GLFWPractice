@@ -11,6 +11,7 @@
 #include "../Header/GLUtils.h"
 #include "../Header/Vector3.h"
 #include "../Header/Geometry.h"
+#include "../Header/Matrix4.h"
 
 
 const char* vertexShader = R"GLSL(
@@ -106,6 +107,14 @@ int main() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    Matrix mat;
+    Matrix pMat(4, 5);
+    mat.print();
+    std:: cout << std:: endl;
+    pMat.print();
+
+    return 0;
 
     while (!glfwWindowShouldClose(window)) {
         int w = W;
