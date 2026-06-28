@@ -19,12 +19,12 @@ const char* vertexShader = R"GLSL(
 
     uniform vec2 uResolution;
     uniform vec2 uOffset;
-    uniform vec2 uScale;
+    uniform float uScale;
 
     void main() {
-        vec2 worldPosition = aPos * uScale + uOffset;
+        vec2 worldPositon = aPos.xy * uScale + uOffset;
 
-        vec2 NDC = worldPositon / uResolution;
+        vec2 ndc = worldPositon / uResolution;
 
         ndc = ndc * 2.0 - 1.0;
 
@@ -35,7 +35,7 @@ const char* vertexShader = R"GLSL(
 const char* fragmentShader = R"GLSL(
     #version 330 core
 
-    out vec3 fragment;
+    out vec4 fragment;
     uniform vec3 uColor;
 
     void main() {
@@ -44,20 +44,23 @@ const char* fragmentShader = R"GLSL(
 )GLSL";
 
 int main() {
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
     if (!glfwInit()) {
         std::cerr << "GLFW INIT ERROR \n";
         return -1;
     }
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     std:: vector<Vector3> grid = makeGrid(16);
 
     GLFWwindow *window = createWindow();
     glfwMakeContextCurrent(window);
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+        std::cerr << "GLAD INIT ERROR\n";
+        return -1;
+    }
 
     GLuint gridVAO = 0;
     GLuint gridVBO = 0;
@@ -78,10 +81,17 @@ int main() {
     glDeleteShader(vs);
     glDeleteShader(fs);
 
+    GLuint uResolutionLoc = glGetUniformLocation(shaderProgram, "uResolution");
+    GLuint uColorLoc = glGetUniformLocation(shaderProgram, "uColor");
+    GLuint uOffsetLoc = glGetUniformLocation(shaderProgram, "uOffset");
+    GLuint uScaleLoc = glGetUniformLocation(shaderProgram, "uScale");
+
     glGenVertexArrays(1, &gridVAO);
     glGenBuffers(1, &gridVBO);
 
+    glBindVertexArray(gridVAO);
     glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+
     glBufferData(GL_ARRAY_BUFFER, grid.size() * sizeof(Vector3), grid.data(), GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
@@ -91,7 +101,21 @@ int main() {
     glBindVertexArray(0);
 
     while (!glfwWindowShouldClose(window)) {
+        int w = W;
+        int h = H;
+        glfwGetFramebufferSize(window, &w, &h);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shaderProgram);
+        glUniform2f(uResolutionLoc, w, h);
+
+        glBindVertexArray(gridVAO);
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        glUniform1f(uScaleLoc, 1.0f);
+
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(grid.size()));
+
         glfwPollEvents();
         glfwSwapBuffers(window);
     }
