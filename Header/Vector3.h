@@ -21,6 +21,15 @@ public:
 
     const Vector3 &operator%(Vector3 vector) const;
 
+    float magnitude();
+
+    float magnitudeSquared();
+
+    void normalize();
+
+    // function that will return a float scalar value from a dot b
+    float scalarProduct(const Vector3 &vector) const;
+
     friend std::ostream &operator<<(std::ostream &stream, const Vector3 &vector);
 };
 

@@ -15,6 +15,8 @@ add_executable(GLWFPractice
         Header/Vector3.h
         Source/Vector3.cpp
         Header/Constants.h
+        Header/Matrix4.h
+        Source/Matrix4.cpp
 )
 
 target_include_directories(GLWFPractice PRIVATE

@@ -36,6 +36,27 @@ const Vector3 &Vector3::operator%(Vector3 vector) const {
     return Vector3(newX, newY, newZ);
 }
 
+float Vector3::magnitude() {
+    return std::sqrtf(x*x + y*y + z*z);
+}
+
+float Vector3::magnitudeSquared() {
+    return x*x + y*y + z*z;
+}
+
+void Vector3::normalize() {
+    float length = magnitude();
+    if (length > 0.0f) {
+        x /= length;
+        y /= length;
+        z /= length;
+    }
+}
+
+float Vector3::scalarProduct(const Vector3 &vector) const {
+    return (x * vector.x) + (y * vector.y) + (z * vector.z);
+}
+
 std::ostream &operator<<(std::ostream &stream, const Vector3 &vector) {
     stream << "x: " << vector.x << ", y: " << vector.y << ", z: " <<vector.z;
     return stream;
