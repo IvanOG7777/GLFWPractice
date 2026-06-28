@@ -13,6 +13,8 @@ add_executable(GLWFPractice
         Header/Geometry.h
         Source/Geometry.cpp
         Header/Vector3.h
+        Source/Vector3.cpp
+        Header/Constants.h
 )
 
 target_include_directories(GLWFPractice PRIVATE
