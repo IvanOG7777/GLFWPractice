@@ -56,10 +56,10 @@ int main() {
     translationMatrix.set(2, 3, -5);
     translationMatrix.set(3, 3, 1);
     translationMatrix.print();
-
-    Matrix4 result = translationMatrix.makeTranslation(-3, 6, 2);
     std:: cout << '\n';
-    result.print();
+
+    Vector4 result = translationMatrix.makeTranslation(-3, 6, 2, 1);
+    std:: cout << result << std:: endl;
 
     return 0;
 

@@ -53,3 +53,8 @@ void Vector4::normalize() {
 float Vector4::scalarProduct(const Vector4 &vector4) const {
     return (x * vector4.x) + (y * vector4.y) + (z * vector4.z) + (w * vector4.w);
 }
+
+std::ostream &operator<<(std::ostream &stream, const Vector4 &vector) {
+    stream << "x: " << vector.x << ", y: " << vector.y << ", z: " <<vector.z << ", w: " << vector.w;
+    return stream;
+}

@@ -53,11 +53,10 @@ Matrix4 Matrix4::operator*(Matrix4 &matrix) {
     return resultingMatrix;
 }
 
-Matrix4 Matrix4::makeTranslation(float x, float y, float z) {
-    Matrix4 resultingMatrix;
+Vector4 Matrix4::makeTranslation(float x, float y, float z, float w) {
+    Vector4 resultingVector4;
 
     float sum = 0;
-    int setC = 0;
     for (int r = 0; r < row; r++) {
         sum = 0;
         for (int c = 0; c < col; c++) {
@@ -74,13 +73,28 @@ Matrix4 Matrix4::makeTranslation(float x, float y, float z) {
                 continue;
             }
             if (c == 3) {
-                sum += get(r, c) * 1;
+                sum += get(r, c) * w;
                 continue;
             }
         }
-        resultingMatrix.set(r, setC++, sum);
+        if (r == 0) {
+            resultingVector4.x = sum;
+            continue;
+        }
+        if (r == 1) {
+            resultingVector4.y = sum;
+            continue;
+        }
+        if (r == 2) {
+            resultingVector4.z = sum;
+            continue;
+        }
+        if (r == 3) {
+            resultingVector4.w = sum;
+            continue;
+        }
     }
-    return resultingMatrix;
+    return resultingVector4;
 }
 
 void Matrix4::print() {

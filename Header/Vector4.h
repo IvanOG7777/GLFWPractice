@@ -7,12 +7,13 @@
 
 #include <iostream>
 class Vector4 {
-private:
+public:
     float x;
     float y;
     float z;
     float w;
 
+public:
     Vector4();
 
     Vector4(float passedX, float passedY, float passedZ, float passedW);
@@ -26,7 +27,7 @@ private:
 
     float scalarProduct(const Vector4 &vector4) const;
 
-    friend std:: ostream &operator<<(std:: ostream &stream, Vector4 &vector4);
+    friend std:: ostream &operator<<(std:: ostream &stream, const Vector4 &vector);
 };
 
 #endif //GLFWPRACTICE_VECTOR4_H

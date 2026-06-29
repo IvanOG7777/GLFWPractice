@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "Vector3.h"
+#include "Vector4.h"
 
 class Matrix4 {
     int col;
@@ -25,8 +25,8 @@ public:
 
     Matrix4 operator*(Matrix4 &matrix);
 
-    Matrix4 makeTranslation(float x, float y, float z);
-    Matrix4 makeTranslation(Vector3);
+    Vector4 makeTranslation(float x, float y, float z, float w);
+    Vector4 makeTranslation(const Vector4 &vector4);
 
     void print();
 };
