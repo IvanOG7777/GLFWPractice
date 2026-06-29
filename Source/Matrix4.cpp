@@ -53,48 +53,83 @@ Matrix4 Matrix4::operator*(Matrix4 &matrix) {
     return resultingMatrix;
 }
 
-Vector4 Matrix4::makeTranslation(float x, float y, float z, float w) {
-    Vector4 resultingVector4;
+Vector4 Matrix4::operator*(const Vector4 &vector4) {
+    Vector4 resultVector4;
 
     float sum = 0;
     for (int r = 0; r < row; r++) {
         sum = 0;
         for (int c = 0; c < col; c++) {
             if (c == 0) {
-                sum += get(r, c) * x;
+                sum += get(r, c) * vector4.x;
                 continue;
             }
             if (c == 1) {
-                sum += get(r, c) * y;
+                sum += get(r, c) * vector4.y;
                 continue;
             }
             if (c == 2) {
-                sum += get(r, c) * z;
+                sum += get(r, c) * vector4.z;
                 continue;
             }
             if (c == 3) {
-                sum += get(r, c) * w;
+                sum += get(r, c) * vector4.w;
                 continue;
             }
         }
         if (r == 0) {
-            resultingVector4.x = sum;
+            resultVector4.x = sum;
             continue;
         }
         if (r == 1) {
-            resultingVector4.y = sum;
+            resultVector4.y = sum;
             continue;
         }
         if (r == 2) {
-            resultingVector4.z = sum;
+            resultVector4.z = sum;
             continue;
         }
         if (r == 3) {
-            resultingVector4.w = sum;
+            resultVector4.w = sum;
             continue;
         }
     }
-    return resultingVector4;
+
+    return resultVector4;
+}
+
+Matrix4 Matrix4::makeTranslation(float x, float y, float z) {
+    Matrix4 resultingMatrix;
+
+    resultingMatrix.set(0,0, 1);
+    resultingMatrix.set(1,1, 1);
+    resultingMatrix.set(2,2, 1);
+    resultingMatrix.set(3,3, 1);
+
+    resultingMatrix.set(0,3, x);
+    resultingMatrix.set(1,3, y);
+    resultingMatrix.set(2,3, z);
+
+    return resultingMatrix;
+}
+
+Matrix4 Matrix4::makeTranslation(const Vector3 &vector3) {
+    Matrix4 resultingMatrix;
+
+    resultingMatrix.set(0,0, 1);
+    resultingMatrix.set(1,1, 1);
+    resultingMatrix.set(2,2, 1);
+    resultingMatrix.set(3,3, 1);
+
+    resultingMatrix.set(0,3, vector3.x);
+    resultingMatrix.set(1,3, vector3.y);
+    resultingMatrix.set(2,3, vector3.z);
+
+    return resultingMatrix;
+}
+
+Matrix4 Matrix4::makeRotation(float angle) {
+    
 }
 
 void Matrix4::print() {

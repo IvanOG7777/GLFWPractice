@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "Vector3.h"
 #include "Vector4.h"
 
 class Matrix4 {
@@ -24,9 +25,12 @@ public:
     const int getCol() const ;
 
     Matrix4 operator*(Matrix4 &matrix);
+    Vector4 operator*(const Vector4 &vector4);
 
-    Vector4 makeTranslation(float x, float y, float z, float w);
-    Vector4 makeTranslation(const Vector4 &vector4);
+    static Matrix4 makeTranslation(float x, float y, float z); // belongs to class and not a specific instance of Matrix object
+    static Matrix4 makeTranslation(const Vector3 &vector3);
+
+    Matrix4 makeRotation(float angle);
 
     void print();
 };

@@ -46,21 +46,11 @@ const char* fragmentShader = R"GLSL(
 
 int main() {
 
-    Matrix4 translationMatrix;
-
-    translationMatrix.set(0, 0, 1);
-    translationMatrix.set(1, 1, 1);
-    translationMatrix.set(2, 2, 1);
-    translationMatrix.set(0, 3, 4);
-    translationMatrix.set(1, 3, 8);
-    translationMatrix.set(2, 3, -5);
-    translationMatrix.set(3, 3, 1);
-    translationMatrix.print();
-    std:: cout << '\n';
-
-    Vector4 result = translationMatrix.makeTranslation(-3, 6, 2, 1);
-    std:: cout << result << std:: endl;
-
+    Vector3 trans(5,0,0);
+    Vector4 point(0, 0, 0, 1);
+    Matrix4 translation = Matrix4::makeTranslation(trans);
+    Vector4 newPoint = translation * point;
+    std:: cout << newPoint << std:: endl;
     return 0;
 
     if (!glfwInit()) {
