@@ -11,7 +11,7 @@
 #include "../Header/GLUtils.h"
 #include "../Header/Vector3.h"
 #include "../Header/Geometry.h"
-#include "../Header/Matrix.h"
+#include "../Header/Matrix4.h"
 
 
 const char* vertexShader = R"GLSL(
@@ -46,20 +46,19 @@ const char* fragmentShader = R"GLSL(
 
 int main() {
 
-    Matrix mat(2, 3);
-    Matrix mat2(3,4);
+    Matrix4 translationMatrix;
 
-    mat.set(0, 0, 1);
-    mat.set(1, 1, 2);
-    mat.set(1, 2, 3);
-    mat.print();
+    translationMatrix.set(0, 0, 1);
+    translationMatrix.set(1, 1, 1);
+    translationMatrix.set(2, 2, 1);
+    translationMatrix.set(0, 3, 4);
+    translationMatrix.set(1, 3, 8);
+    translationMatrix.set(2, 3, -5);
+    translationMatrix.set(3, 3, 1);
+    translationMatrix.print();
+
+    Matrix4 result = translationMatrix.makeTranslation(-3, 6, 2);
     std:: cout << '\n';
-    mat2.set(0, 0, 1);
-    mat2.set(1, 1, 2);
-    mat2.set(2, 2, 3);
-    mat2.print();
-    std:: cout << '\n';
-    Matrix result = mat*mat2;
     result.print();
 
     return 0;

@@ -9,14 +9,13 @@
 
 #include "Vector3.h"
 
-class Matrix {
+class Matrix4 {
     int col;
     int row;
     std::vector<std::vector<float>> data;
 
 public:
-    Matrix();
-    Matrix(int passedRow, int passedCol);
+    Matrix4();
 
     void set(int r, int c, float val);
     float get(int r, int c);
@@ -24,10 +23,10 @@ public:
     const int getRow() const ;
     const int getCol() const ;
 
-    Matrix operator*(Matrix &matrix);
+    Matrix4 operator*(Matrix4 &matrix);
 
-    Matrix makeTranslation(float x, float y, float z);
-    Matrix makeTranslation(Vector3);
+    Matrix4 makeTranslation(float x, float y, float z);
+    Matrix4 makeTranslation(Vector3);
 
     void print();
 };
