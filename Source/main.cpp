@@ -76,8 +76,6 @@ int main() {
     std:: cout << resultX << std:: endl;
     std:: cout << std:: endl;
 
-    return 0;
-
     if (!glfwInit()) {
         std::cerr << "GLFW INIT ERROR \n";
         return -1;
