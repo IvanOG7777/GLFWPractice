@@ -30,7 +30,8 @@ public:
     static Matrix4 makeTranslation(float x, float y, float z); // belongs to class and not a specific instance of Matrix object
     static Matrix4 makeTranslation(const Vector3 &vector3);
 
-    Matrix4 makeRotation(float angle);
+    static Matrix4 makeRotationY(float angleRadians);
+    static Matrix4 makeRotationX(float angleRadians);
 
     void print();
 };

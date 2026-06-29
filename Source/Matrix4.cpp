@@ -128,8 +128,42 @@ Matrix4 Matrix4::makeTranslation(const Vector3 &vector3) {
     return resultingMatrix;
 }
 
-Matrix4 Matrix4::makeRotation(float angle) {
-    
+Matrix4 Matrix4::makeRotationY(float angleRadians) {
+    Matrix4 resultingMatrix;
+
+    float sinVal = std::sinf(angleRadians);
+    float cosVal = std::cosf(angleRadians);
+
+    if (std::abs(sinVal) < 0.00001f) sinVal = 0.0f;
+    if (std::abs(cosVal) < 0.00001f) cosVal = 0.0f;
+
+    resultingMatrix.set(0, 0, cosVal);
+    resultingMatrix.set(0, 2, sinVal);
+    resultingMatrix.set(2, 0, -sinVal);
+    resultingMatrix.set(2, 2, cosVal);
+    resultingMatrix.set(1, 1, 1);
+    resultingMatrix.set(3, 3, 1);
+
+    return resultingMatrix;
+}
+
+Matrix4 Matrix4::makeRotationX(float angleRadians) {
+    Matrix4 resultingMatrix;
+
+    float sinVal = std::sinf(angleRadians);
+    float cosVal = std::cosf(angleRadians);
+
+    if (std::abs(sinVal) < 0.00001f) sinVal = 0.0f;
+    if (std::abs(cosVal) < 0.00001f) cosVal = 0.0f;
+
+    resultingMatrix.set(0, 0, 1);
+    resultingMatrix.set(1, 1, cosVal);
+    resultingMatrix.set(1, 2, -sinVal);
+    resultingMatrix.set(2, 1, sinVal);
+    resultingMatrix.set(2, 2, cosVal);
+    resultingMatrix.set(3, 3, 1);
+
+    return resultingMatrix;
 }
 
 void Matrix4::print() {

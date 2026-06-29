@@ -12,6 +12,7 @@
 #include "../Header/Vector3.h"
 #include "../Header/Geometry.h"
 #include "../Header/Matrix4.h"
+#include "../Header/Constants.h"
 
 
 const char* vertexShader = R"GLSL(
@@ -44,13 +45,37 @@ const char* fragmentShader = R"GLSL(
     }
 )GLSL";
 
+float toRadians(float angleDegrees) {
+    return angleDegrees * (PI/180.0f);
+}
+
 int main() {
 
-    Vector3 trans(5,0,0);
-    Vector4 point(0, 0, 0, 1);
-    Matrix4 translation = Matrix4::makeTranslation(trans);
-    Vector4 newPoint = translation * point;
-    std:: cout << newPoint << std:: endl;
+    Matrix4 matrixRotationY = Matrix4::makeRotationY(toRadians(180.0f));
+    Matrix4 matrixRotationX = Matrix4::makeRotationX(toRadians(90.0f));
+    std:: cout << "rotationY" << std:: endl;
+    matrixRotationY.print();
+    std:: cout << std:: endl;
+    std:: cout << "rotationX" << std:: endl;
+    matrixRotationX.print();
+    std:: cout << std:: endl;
+
+    Vector4 point(0,1,0,1);
+    std:: cout << "Before y and x rotation \n";
+    std:: cout << point << std:: endl;
+    std:: cout << std:: endl;
+
+    auto resultY = matrixRotationY * point;
+    auto resultX = matrixRotationX * point;
+
+    std:: cout << "After y rotation \n";
+    std:: cout << resultY << std:: endl;
+    std:: cout << std:: endl;
+
+    std:: cout << "After x rotation \n";
+    std:: cout << resultX << std:: endl;
+    std:: cout << std:: endl;
+
     return 0;
 
     if (!glfwInit()) {
