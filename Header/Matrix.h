@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "Vector3.h"
+
 class Matrix {
     int col;
     int row;
@@ -23,6 +25,9 @@ public:
     const int getCol() const ;
 
     Matrix operator*(Matrix &matrix);
+
+    Matrix makeTranslation(float x, float y, float z);
+    Matrix makeTranslation(Vector3);
 
     void print();
 };
