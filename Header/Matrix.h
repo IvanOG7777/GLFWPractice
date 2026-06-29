@@ -19,7 +19,10 @@ public:
     void set(int r, int c, float val);
     float get(int r, int c);
 
-    Matrix &operator*(Matrix &matrix);
+    const int getRow() const ;
+    const int getCol() const ;
+
+    Matrix operator*(Matrix &matrix);
 
     void print();
 };

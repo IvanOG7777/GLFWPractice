@@ -11,7 +11,7 @@
 #include "../Header/GLUtils.h"
 #include "../Header/Vector3.h"
 #include "../Header/Geometry.h"
-#include "../Header/Matrix4.h"
+#include "../Header/Matrix.h"
 
 
 const char* vertexShader = R"GLSL(
@@ -45,6 +45,25 @@ const char* fragmentShader = R"GLSL(
 )GLSL";
 
 int main() {
+
+    Matrix mat(2, 3);
+    Matrix mat2(3,4);
+
+    mat.set(0, 0, 1);
+    mat.set(1, 1, 2);
+    mat.set(1, 2, 3);
+    mat.print();
+    std:: cout << '\n';
+    mat2.set(0, 0, 1);
+    mat2.set(1, 1, 2);
+    mat2.set(2, 2, 3);
+    mat2.print();
+    std:: cout << '\n';
+    Matrix result = mat*mat2;
+    result.print();
+
+    return 0;
+
     if (!glfwInit()) {
         std::cerr << "GLFW INIT ERROR \n";
         return -1;
@@ -107,15 +126,6 @@ int main() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    Matrix mat;
-    mat.set(0,0,1);
-    mat.set(1,1,1);
-    mat.set(2,2,1);
-    mat.set(3,3,1);
-    mat.print();
-
-    return 0;
 
     while (!glfwWindowShouldClose(window)) {
         int w = W;
