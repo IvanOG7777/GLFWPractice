@@ -199,6 +199,8 @@ Matrix4 Matrix4::makePerspective(float fovY, float aspectRatio, float near, floa
 }
 
 Matrix4 Matrix4::makeLookAt(Vector3 eye, Vector3 target, Vector3 worldUp) {
+    Matrix4 resultingMatrix;
+
     Vector3 forward = eye - target;
     forward.normalize();
 
@@ -206,6 +208,25 @@ Matrix4 Matrix4::makeLookAt(Vector3 eye, Vector3 target, Vector3 worldUp) {
     right.normalize();
 
     Vector3 up = forward % right;
+
+    resultingMatrix.set(0, 0, right.x);
+    resultingMatrix.set(0, 1, right.y);
+    resultingMatrix.set(0, 2, right.z);
+
+    resultingMatrix.set(1, 0, up.x);
+    resultingMatrix.set(1, 1, up.y);
+    resultingMatrix.set(1, 2, up.z);
+
+    resultingMatrix.set(2, 0, forward.x);
+    resultingMatrix.set(2, 1, forward.y);
+    resultingMatrix.set(2, 2, forward.z);
+
+    resultingMatrix.set(3, 0, -(right.scalarProduct(eye)));
+    resultingMatrix.set(3, 1, -(up.scalarProduct(eye)));
+    resultingMatrix.set(3, 2, -(forward.scalarProduct(eye)));
+    resultingMatrix.set(3, 3, 1);
+
+    return resultingMatrix;
 }
 
 void Matrix4::print() {
