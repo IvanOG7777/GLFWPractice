@@ -50,32 +50,6 @@ float toRadians(float angleDegrees) {
 }
 
 int main() {
-
-    Matrix4 matrixRotationY = Matrix4::makeRotationY(toRadians(180.0f));
-    Matrix4 matrixRotationX = Matrix4::makeRotationX(toRadians(90.0f));
-    std:: cout << "rotationY" << std:: endl;
-    matrixRotationY.print();
-    std:: cout << std:: endl;
-    std:: cout << "rotationX" << std:: endl;
-    matrixRotationX.print();
-    std:: cout << std:: endl;
-
-    Vector4 point(0,1,0,1);
-    std:: cout << "Before y and x rotation \n";
-    std:: cout << point << std:: endl;
-    std:: cout << std:: endl;
-
-    auto resultY = matrixRotationY * point;
-    auto resultX = matrixRotationX * point;
-
-    std:: cout << "After y rotation \n";
-    std:: cout << resultY << std:: endl;
-    std:: cout << std:: endl;
-
-    std:: cout << "After x rotation \n";
-    std:: cout << resultX << std:: endl;
-    std:: cout << std:: endl;
-
     if (!glfwInit()) {
         std::cerr << "GLFW INIT ERROR \n";
         return -1;
@@ -85,8 +59,29 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    std:: vector<Vector3> grid = makeGrid(4);
+    int currentAngle = 0;
+    Matrix4 translation = Matrix4::makeTranslation(600, 200, 0);
+    Matrix4 x = Matrix4::makeRotationY(toRadians(280));
+    Matrix4 z = Matrix4::makeRotationZ(toRadians(45));
+
+
+    std::vector<Vector3> grid = makeGrid(4);
     std::vector<Vector3> square = makeSquare();
+    std::vector<Vector3> transformedSquare;
+    std::vector<Vector3> transformedXSquare;
+
+    for (auto &vect : square) {
+        Vector4 vect4(vect.x, vect.y, vect.z, 1);
+        auto transformed = translation * vect4;
+        transformedSquare.emplace_back(transformed.x, transformed.y, transformed.z);
+    }
+
+    for (auto &vect : transformedSquare) {
+        Vector4 vect4(vect.x, vect.y, vect.z, 1);
+        auto trans = z * vect4;
+        transformedXSquare.emplace_back(trans.x, trans.y, trans.z);
+    }
+
 
     GLFWwindow *window = createWindow();
     glfwMakeContextCurrent(window);
@@ -95,8 +90,8 @@ int main() {
         return -1;
     }
 
-    GLuint gridVAO = 0, squareVAO = 0;
-    GLuint gridVBO = 0, squareVBO = 0;
+    GLuint gridVAO = 0, squareVAO = 0, tSquareVAO = 0, tXSquareVAO = 0;
+    GLuint gridVBO = 0, squareVBO = 0, tSquareVBO = 0, tXSquareVBO = 0;
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertexShader, nullptr);
@@ -121,21 +116,41 @@ int main() {
 
     glGenVertexArrays(1, &gridVAO);
     glGenBuffers(1, &gridVBO);
-    glGenVertexArrays(1, &squareVAO);
-    glGenBuffers(1, &squareVBO);
-
-
     glBindVertexArray(gridVAO);
     glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-    glBindVertexArray(squareVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, squareVBO);
-
     glBufferData(GL_ARRAY_BUFFER, grid.size() * sizeof(Vector3), grid.data(), GL_DYNAMIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, square.size() * sizeof(Vector3), square.data(), GL_DYNAMIC_DRAW);
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
     glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
+    glGenVertexArrays(1, &squareVAO);
+    glGenBuffers(1, &squareVBO);
+    glBindVertexArray(squareVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, squareVBO);
+    glBufferData(GL_ARRAY_BUFFER, square.size() * sizeof(Vector3), square.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    glGenVertexArrays(1, &tSquareVAO);
+    glGenBuffers(1, &tSquareVBO);
+    glBindVertexArray(tSquareVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, tSquareVBO);
+    glBufferData(GL_ARRAY_BUFFER, transformedSquare.size() * sizeof(Vector3), transformedSquare.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    glGenVertexArrays(1, &tXSquareVAO);
+    glGenBuffers(1, &tXSquareVBO);
+    glBindVertexArray(tXSquareVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, tXSquareVBO);
+    glBufferData(GL_ARRAY_BUFFER, transformedXSquare.size() * sizeof(Vector3), transformedXSquare.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
+    glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
@@ -148,19 +163,41 @@ int main() {
         glUseProgram(shaderProgram);
         glUniform2f(uResolutionLoc, w, h);
 
-        // glBindVertexArray(gridVAO);
-        // glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
-        // glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-        // glUniform1f(uScaleLoc, 1.0f);
-        //
-        // glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(grid.size()));
+        glBindVertexArray(gridVAO);
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(grid.size()));
 
         glBindVertexArray(squareVAO);
         glUniform3f(uColorLoc, 0.0f, 1.0f, 1.0f);
         glUniform2f(uOffsetLoc, 0.0f, 0.0f);
         glUniform1f(uScaleLoc, 1.0f);
-
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(square.size()));
+
+        glBindVertexArray(tSquareVAO);
+        glUniform3f(uColorLoc, 0.0f, 1.0f, 0.0f);
+        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(transformedSquare.size()));
+
+        transformedXSquare.clear();
+        Matrix4 rotation = Matrix4::makeRotationZ(toRadians(currentAngle++));
+        Matrix4 transform = translation * rotation;
+        for (auto &vect : square) {
+            Vector4 vect4(vect.x, vect.y, vect.z, 1);
+            auto transformed = transform * vect4;
+            transformedXSquare.emplace_back(transformed.x, transformed.y, transformed.z);
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, tXSquareVBO);
+        glBufferData(GL_ARRAY_BUFFER, transformedXSquare.size() * sizeof(Vector3), transformedXSquare.data(), GL_DYNAMIC_DRAW);
+
+        glBindVertexArray(tXSquareVAO);
+        glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
+        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(transformedXSquare.size()));
 
         glfwPollEvents();
         glfwSwapBuffers(window);

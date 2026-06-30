@@ -166,6 +166,25 @@ Matrix4 Matrix4::makeRotationX(float angleRadians) {
     return resultingMatrix;
 }
 
+Matrix4 Matrix4::makeRotationZ(float angleRadians) {
+    Matrix4 resultingMatrix;
+
+    float sinVal = std::sinf(angleRadians);
+    float cosVal = std::cosf(angleRadians);
+
+    if (std::abs(sinVal) < 0.00001f) sinVal = 0.0f;
+    if (std::abs(cosVal) < 0.00001f) cosVal = 0.0f;
+
+    resultingMatrix.set(0, 0, cosVal);
+    resultingMatrix.set(1, 0, sinVal);
+    resultingMatrix.set(0, 1, -sinVal);
+    resultingMatrix.set(1, 1, cosVal);
+    resultingMatrix.set(2, 2, 1);
+    resultingMatrix.set(3, 3, 1);
+
+    return resultingMatrix;
+}
+
 void Matrix4::print() {
     for (int r = 0; r < row; r++) {
         for (int c = 0; c < col; c++) {
