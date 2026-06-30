@@ -19,6 +19,8 @@ add_executable(GLWFPractice
         Source/Matrix4.cpp
         Header/Vector4.h
         Source/Vector4.cpp
+        Header/Camera.h
+        Source/Camera.cpp
 )
 
 target_include_directories(GLWFPractice PRIVATE
