@@ -28,12 +28,28 @@ void Vector3::setVector3(float passedX, float passedY, float passedZ) {
     z = passedZ;
 }
 //Cross product
-const Vector3 Vector3::operator%(Vector3 vector) const {
+Vector3 Vector3::operator%(Vector3 &vector) const {
     float newX = (y * vector.z) - (z * vector.y);
     float newY = (z * vector.x) - (x * vector.z);
     float newZ = (x * vector.y) - (y * vector.x);
 
-    return Vector3(newX, newY, newZ);
+    return {newX, newY, newZ};
+}
+
+Vector3 Vector3::operator-(Vector3 &vector) const {
+    float newX = x - vector.x;
+    float newY = y - vector.y;
+    float newZ = z - vector.z;
+
+    return {newX, newY, newZ};
+}
+
+Vector3 Vector3::operator+(Vector3 &vector) const {
+    float newX = x + vector.x;
+    float newY = y + vector.y;
+    float newZ = z + vector.z;
+
+    return {newX, newY, newZ};
 }
 
 float Vector3::magnitude() {

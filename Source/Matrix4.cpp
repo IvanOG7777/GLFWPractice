@@ -198,6 +198,16 @@ Matrix4 Matrix4::makePerspective(float fovY, float aspectRatio, float near, floa
     return resultingMatrix;
 }
 
+Matrix4 Matrix4::makeLookAt(Vector3 eye, Vector3 target, Vector3 worldUp) {
+    Vector3 forward = eye - target;
+    forward.normalize();
+
+    Vector3 right = worldUp % forward;
+    right.normalize();
+
+    Vector3 up = forward % right;
+}
+
 void Matrix4::print() {
     for (int r = 0; r < row; r++) {
         for (int c = 0; c < col; c++) {

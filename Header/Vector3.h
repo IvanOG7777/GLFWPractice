@@ -20,7 +20,11 @@ public:
     void setVector3(float passedX, float passedY, float passedZ);
 
     // cross product
-    const Vector3 operator%(Vector3 vector) const;
+    Vector3 operator%(Vector3 &vector) const;
+
+    Vector3 operator-(Vector3 &vector) const;
+    Vector3 operator+(Vector3 &vector) const;
+
 
     float magnitude();
 
