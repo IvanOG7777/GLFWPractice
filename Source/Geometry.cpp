@@ -36,14 +36,15 @@ std::vector<Vector3> makeGrid(int slices) {
     return triangles;
 }
 
+// creates a local space square.
 std::vector<Vector3> makeSquare() {
 
     std::vector<Vector3> triangles;
 
-    Vector3 bottomLeft = {200.0f, 400.f, 0};
-    Vector3 bottomRight = {400.0f, 400.f, 0};
-    Vector3 topLeft = {200.0f, 600.f, 0};
-    Vector3 topRight = {400.0f, 600.f, 0};
+    Vector3 bottomLeft = {-1.0f, -1.0f, 0};
+    Vector3 bottomRight = {1.0f, -1.0f, 0};
+    Vector3 topLeft = {-1.0f, 1.0f, 0};
+    Vector3 topRight = {1.0f, 1.0f, 0};
 
 
     triangles.emplace_back(bottomLeft);

@@ -34,6 +34,17 @@ const char* vertexShader = R"GLSL(
     }
 )GLSL";
 
+const char* threeDVSShader = R"GLSL(
+    #version 330 core
+    layout(location = 0) in vec3 aPos;
+
+    uniform mat4 uMVP;
+
+    void main() {
+        gl_Position = uMVP * vec4(aPos, 1.0);
+    }
+)GLSL";
+
 const char* fragmentShader = R"GLSL(
     #version 330 core
 
@@ -59,33 +70,42 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    int currentAngle = 0;
-    Matrix4 translation = Matrix4::makeTranslation(600, 200, 0);
-    Matrix4 x = Matrix4::makeRotationY(toRadians(280));
-    Matrix4 z = Matrix4::makeRotationZ(toRadians(45));
-
-    Matrix4 perspectiveMatrix = Matrix4::makePerspective(toRadians(45), W/H, 0.1, 1000);
-    std:: cout << toRadians(45) << std::endl;
-    perspectiveMatrix.print();
-    return 0;
-
-
     std::vector<Vector3> grid = makeGrid(4);
-    std::vector<Vector3> square = makeSquare();
-    std::vector<Vector3> transformedSquare;
-    std::vector<Vector3> transformedXSquare;
+    std::vector<Vector3> square = makeSquare(); // creates square in its own local space
+    std::vector<Vector3> mvpSquare;
 
-    for (auto &vect : square) {
-        Vector4 vect4(vect.x, vect.y, vect.z, 1);
-        auto transformed = translation * vect4;
-        transformedSquare.emplace_back(transformed.x, transformed.y, transformed.z);
+    Matrix4 translation = Matrix4::makeTranslation(0, 0, -10);
+    Matrix4 projection = Matrix4:: makePerspective(toRadians(45), W/H, 0.1, 1000);
+    Matrix4 MVP = projection * translation;
+    MVP.print();
+
+
+    std:: cout << std:: endl;
+    GLfloat matrix[16];
+    int index = 0;
+    for (int c = 0; c < MVP.getCol(); c++) {
+        for (int r = 0; r < MVP.getRow(); r++) {
+            float val = MVP.get(r, c);
+            std:: cout << val << std:: endl;
+            matrix[index++] = val;
+        }
     }
 
-    for (auto &vect : transformedSquare) {
-        Vector4 vect4(vect.x, vect.y, vect.z, 1);
-        auto trans = z * vect4;
-        transformedXSquare.emplace_back(trans.x, trans.y, trans.z);
+    for (int i = 0; i < 16; i++) {
+        std:: cout << matrix[i] << " ";
     }
+
+    for (auto &vec3 : square) {
+        Vector4 vec4(vec3.x, vec3.y, vec3.z, 1);
+        Vector4 final = MVP * vec4;
+        mvpSquare.emplace_back(final.x, final.y, final.z);
+    }
+
+    for (auto &vec3 : mvpSquare) {
+        std:: cout << vec3 << std:: endl;
+    }
+
+
 
 
     GLFWwindow *window = createWindow();
@@ -114,10 +134,27 @@ int main() {
     glDeleteShader(vs);
     glDeleteShader(fs);
 
+    GLuint threeDvs = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(threeDvs, 1, &threeDVSShader, nullptr);
+    glCompileShader(threeDvs);
+
+    GLuint threeDfs = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(threeDfs, 1, &fragmentShader, nullptr);
+    glCompileShader(threeDfs);
+
+    GLuint threeDProgram = glCreateProgram();
+    glAttachShader(threeDProgram, threeDvs);
+    glAttachShader(threeDProgram, threeDfs);
+    glLinkProgram(threeDProgram);
+
+    glDeleteShader(threeDvs);
+    glDeleteShader(threeDfs);
+
     GLuint uResolutionLoc = glGetUniformLocation(shaderProgram, "uResolution");
-    GLuint uColorLoc = glGetUniformLocation(shaderProgram, "uColor");
+    GLuint uColorLoc = glGetUniformLocation(threeDProgram, "uColor");
     GLuint uOffsetLoc = glGetUniformLocation(shaderProgram, "uOffset");
     GLuint uScaleLoc = glGetUniformLocation(shaderProgram, "uScale");
+    GLuint uMVP = glGetUniformLocation(threeDProgram, "uMVP");
 
     glGenVertexArrays(1, &gridVAO);
     glGenBuffers(1, &gridVBO);
@@ -139,70 +176,18 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    glGenVertexArrays(1, &tSquareVAO);
-    glGenBuffers(1, &tSquareVBO);
-    glBindVertexArray(tSquareVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, tSquareVBO);
-    glBufferData(GL_ARRAY_BUFFER, transformedSquare.size() * sizeof(Vector3), transformedSquare.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    glGenVertexArrays(1, &tXSquareVAO);
-    glGenBuffers(1, &tXSquareVBO);
-    glBindVertexArray(tXSquareVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, tXSquareVBO);
-    glBufferData(GL_ARRAY_BUFFER, transformedXSquare.size() * sizeof(Vector3), transformedXSquare.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
     while (!glfwWindowShouldClose(window)) {
         int w = W;
         int h = H;
         glfwGetFramebufferSize(window, &w, &h);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
-        glUniform2f(uResolutionLoc, w, h);
-
-        glBindVertexArray(gridVAO);
-        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
-        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-        glUniform1f(uScaleLoc, 1.0f);
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(grid.size()));
+        glUseProgram(threeDProgram);
+        glUniformMatrix4fv(uMVP, 1, GL_TRUE, matrix);
 
         glBindVertexArray(squareVAO);
         glUniform3f(uColorLoc, 0.0f, 1.0f, 1.0f);
-        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-        glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(square.size()));
-
-        glBindVertexArray(tSquareVAO);
-        glUniform3f(uColorLoc, 0.0f, 1.0f, 0.0f);
-        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-        glUniform1f(uScaleLoc, 1.0f);
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(transformedSquare.size()));
-
-        transformedXSquare.clear();
-        Matrix4 rotation = Matrix4::makeRotationZ(toRadians(currentAngle++));
-        Matrix4 transform = translation * rotation;
-        for (auto &vect : square) {
-            Vector4 vect4(vect.x, vect.y, vect.z, 1);
-            auto transformed = transform * vect4;
-            transformedXSquare.emplace_back(transformed.x, transformed.y, transformed.z);
-        }
-
-        glBindBuffer(GL_ARRAY_BUFFER, tXSquareVBO);
-        glBufferData(GL_ARRAY_BUFFER, transformedXSquare.size() * sizeof(Vector3), transformedXSquare.data(), GL_DYNAMIC_DRAW);
-
-        glBindVertexArray(tXSquareVAO);
-        glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
-        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-        glUniform1f(uScaleLoc, 1.0f);
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(transformedXSquare.size()));
 
         glfwPollEvents();
         glfwSwapBuffers(window);
