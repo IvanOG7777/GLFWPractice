@@ -34,6 +34,7 @@ public:
     static Matrix4 makeRotationX(float angleRadians);
     static Matrix4 makeRotationZ(float angleRadians);
     static Matrix4 makePerspective(float fovY, float aspectRatio, float near, float far);
+    static Matrix4 makeLookAt(Vector3 eye, Vector3 target, Vector3 worldUp);
 
     void print();
 };

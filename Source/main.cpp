@@ -77,11 +77,9 @@ int main() {
     Matrix4 translation = Matrix4::makeTranslation(0, 0, -10);
     Matrix4 projection = Matrix4:: makePerspective(toRadians(45), W/H, 0.1, 1000);
     Matrix4 MVP = projection * translation;
-    MVP.print();
 
 
-    std:: cout << std:: endl;
-    GLfloat matrix[16];
+    GLfloat matrix[16]; // stores the points in flatted array in row major order
     int index = 0;
     for (int r = 0; r < MVP.getRow(); r++) {
         for (int c = 0; c < MVP.getCol(); c++) {
@@ -90,22 +88,6 @@ int main() {
             matrix[index++] = val;
         }
     }
-
-    for (int i = 0; i < 16; i++) {
-        std:: cout << matrix[i] << " ";
-    }
-
-    for (auto &vec3 : square) {
-        Vector4 vec4(vec3.x, vec3.y, vec3.z, 1);
-        Vector4 final = MVP * vec4;
-        mvpSquare.emplace_back(final.x, final.y, final.z);
-    }
-
-    for (auto &vec3 : mvpSquare) {
-        std:: cout << vec3 << std:: endl;
-    }
-
-
 
 
     GLFWwindow *window = createWindow();
