@@ -64,6 +64,11 @@ int main() {
     Matrix4 x = Matrix4::makeRotationY(toRadians(280));
     Matrix4 z = Matrix4::makeRotationZ(toRadians(45));
 
+    Matrix4 perspectiveMatrix = Matrix4::makePerspective(toRadians(45), W/H, 0.1, 1000);
+    std:: cout << toRadians(45) << std::endl;
+    perspectiveMatrix.print();
+    return 0;
+
 
     std::vector<Vector3> grid = makeGrid(4);
     std::vector<Vector3> square = makeSquare();

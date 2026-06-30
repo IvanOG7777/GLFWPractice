@@ -33,6 +33,7 @@ public:
     static Matrix4 makeRotationY(float angleRadians);
     static Matrix4 makeRotationX(float angleRadians);
     static Matrix4 makeRotationZ(float angleRadians);
+    static Matrix4 makePerspective(float fovY, float aspectRatio, float near, float far);
 
     void print();
 };

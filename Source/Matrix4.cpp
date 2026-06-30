@@ -185,6 +185,19 @@ Matrix4 Matrix4::makeRotationZ(float angleRadians) {
     return resultingMatrix;
 }
 
+Matrix4 Matrix4::makePerspective(float fovY, float aspectRatio, float near, float far) {
+    Matrix4 resultingMatrix;
+    float focalLength = 1.0f / std::tanf(fovY / 2.0f);
+
+    resultingMatrix.set(0, 0, focalLength / aspectRatio);
+    resultingMatrix.set(1, 1, focalLength);
+    resultingMatrix.set(2, 2, (far + near) / (near - far));
+    resultingMatrix.set(2, 3, (2 * far * near) / (near - far));
+    resultingMatrix.set(3, 2, -1);
+
+    return resultingMatrix;
+}
+
 void Matrix4::print() {
     for (int r = 0; r < row; r++) {
         for (int c = 0; c < col; c++) {
