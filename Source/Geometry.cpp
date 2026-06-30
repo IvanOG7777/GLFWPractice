@@ -47,17 +47,28 @@ std::vector<Vector3> makeSquare() {
     Vector3 topRight = {1.0f, 1.0f, 0};
 
 
+    // for GL_LINES, connects points
+    // triangles.emplace_back(bottomLeft);
+    // triangles.emplace_back(bottomRight);
+    //
+    // triangles.emplace_back(bottomRight);
+    // triangles.emplace_back(topRight);
+    //
+    // triangles.emplace_back(topRight);
+    // triangles.emplace_back(topLeft);
+    //
+    // triangles.emplace_back(topLeft);
+    // triangles.emplace_back(bottomLeft);
+
+    // for GL_TRIANGLES, connects 3 points to make a triangle
     triangles.emplace_back(bottomLeft);
     triangles.emplace_back(bottomRight);
+    triangles.emplace_back(topLeft);
 
     triangles.emplace_back(bottomRight);
     triangles.emplace_back(topRight);
-
-    triangles.emplace_back(topRight);
     triangles.emplace_back(topLeft);
 
-    triangles.emplace_back(topLeft);
-    triangles.emplace_back(bottomLeft);
 
 
     return triangles;

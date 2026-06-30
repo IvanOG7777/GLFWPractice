@@ -83,8 +83,8 @@ int main() {
     std:: cout << std:: endl;
     GLfloat matrix[16];
     int index = 0;
-    for (int c = 0; c < MVP.getCol(); c++) {
-        for (int r = 0; r < MVP.getRow(); r++) {
+    for (int r = 0; r < MVP.getRow(); r++) {
+        for (int c = 0; c < MVP.getCol(); c++) {
             float val = MVP.get(r, c);
             std:: cout << val << std:: endl;
             matrix[index++] = val;
@@ -187,7 +187,7 @@ int main() {
 
         glBindVertexArray(squareVAO);
         glUniform3f(uColorLoc, 0.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(square.size()));
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(square.size()));
 
         glfwPollEvents();
         glfwSwapBuffers(window);
