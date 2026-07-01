@@ -74,11 +74,15 @@ int main() {
     std::vector<Vector3> square = makeSquare(); // creates square in its own local space
     std::vector<Vector3> cube = makeCube();
 
-    Matrix4 translation = Matrix4::makeTranslation(0, 0, -100);
-    Matrix4 translation2 = Matrix4::makeTranslation(-20, 0, -50);
+    Matrix4 translation = Matrix4::makeTranslation(-20, 0, -50);
+    Matrix4 translation2 = Matrix4::makeTranslation(0, 0, 0);
+
     Matrix4 projection = Matrix4:: makePerspective(toRadians(45), W/H, 0.1, 1000);
-    Matrix4 MVP = projection * translation;
-    Matrix4 cubeMVP = projection * translation2;
+
+    Matrix4 view = Matrix4::makeLookAt({5, 8, 10}, {0, 0, 0}, {0, 1, 0});
+
+    Matrix4 MVP = projection * view * translation;
+    Matrix4 cubeMVP = projection * view * translation2;
 
 
 
@@ -197,7 +201,7 @@ int main() {
 
         glBindVertexArray(cubeVAO);
         glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(square.size()));
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(cube.size()));
 
 
 
