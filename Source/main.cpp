@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 
+#include "../Header/Camera.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
@@ -69,6 +70,11 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    Camera camera;
+    camera.setPitch(toRadians(45));
+    std:: cout << camera.getDirection() << std:: endl;
+    return 0;
 
     std::vector<Vector3> grid = makeGrid(4);
     std::vector<Vector3> square = makeSquare(); // creates square in its own local space

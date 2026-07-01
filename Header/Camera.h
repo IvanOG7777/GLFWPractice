@@ -10,17 +10,26 @@
 class Camera {
 private:
     Vector3 position;
-    float yaw;
-    float pitch;
+    Vector3 worldUp;
+    float yaw; // left and right (horizontal) rotation
+    float pitch; // up and down (vertical) rotation
 
 public:
     Camera();
 
-    Vector3 getDirection();
+    Vector3 getDirection() const;
 
     Vector3 getRight();
 
     Matrix4 getViewMatrix();
+
+    void setPosition(Vector3 &passedPosition);
+    void setYaw(float yawRadians);
+    void setPitch(float pitchRadians);
+
+    Vector3 &getPosition();
+    float &getYaw();
+    float &getPitch();
 
 };
 
