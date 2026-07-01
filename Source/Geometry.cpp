@@ -115,4 +115,35 @@ std:: vector<Vector3> makeCube() {
     triangles.emplace_back(topRight);
     triangles.emplace_back(topRightZ);
     triangles.emplace_back(topLeftZ);
+    //
+
+    // Bottom face
+    triangles.emplace_back(bottomLeft);
+    triangles.emplace_back(bottomRight);
+    triangles.emplace_back(bottomLeftZ);
+
+    triangles.emplace_back(bottomRight);
+    triangles.emplace_back(bottomRightZ);
+    triangles.emplace_back(bottomLeftZ);
+    //
+
+    // Left face
+    triangles.emplace_back(bottomLeft);
+    triangles.emplace_back(bottomLeftZ);
+    triangles.emplace_back(topLeft);
+
+    triangles.emplace_back(bottomLeftZ);
+    triangles.emplace_back(topLeftZ);
+    triangles.emplace_back(topLeft);
+    //
+
+    // Right face
+    triangles.emplace_back(bottomRight);
+    triangles.emplace_back(bottomRightZ);
+    triangles.emplace_back(topRight);
+
+    triangles.emplace_back(bottomRightZ);
+    triangles.emplace_back(topRightZ);
+    triangles.emplace_back(topRight);
+    //
 }
