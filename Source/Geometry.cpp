@@ -69,7 +69,50 @@ std::vector<Vector3> makeSquare() {
     triangles.emplace_back(topRight);
     triangles.emplace_back(topLeft);
 
-
-
     return triangles;
+}
+
+std:: vector<Vector3> makeCube() {
+    std::vector<Vector3> triangles;
+
+    Vector3 bottomLeft = {-1.0f, -1.0f, 0};
+    Vector3 bottomRight = {1.0f, -1.0f, 0};
+    Vector3 topLeft = {-1.0f, 1.0f, 0};
+    Vector3 topRight = {1.0f, 1.0f, 0};
+
+    Vector3 bottomLeftZ = {-1.0f, -1.0f, -1};
+    Vector3 bottomRightZ = {1.0f, -1.0f, -1};
+    Vector3 topLeftZ = {-1.0f, 1.0f, -1};
+    Vector3 topRightZ = {1.0f, 1.0f, -1};
+
+    //Faces of the cube;
+
+    // Front face
+    triangles.emplace_back(bottomLeft);
+    triangles.emplace_back(bottomRight);
+    triangles.emplace_back(topLeft);
+
+    triangles.emplace_back(bottomRight);
+    triangles.emplace_back(topRight);
+    triangles.emplace_back(topLeft);
+    //
+
+    //Back face
+    triangles.emplace_back(bottomLeftZ);
+    triangles.emplace_back(bottomRightZ);
+    triangles.emplace_back(topLeftZ);
+
+    triangles.emplace_back(bottomRightZ);
+    triangles.emplace_back(topRightZ);
+    triangles.emplace_back(topLeftZ);
+    //
+
+    //Top face
+    triangles.emplace_back(topLeft);
+    triangles.emplace_back(topRight);
+    triangles.emplace_back(topLeftZ);
+
+    triangles.emplace_back(topRight);
+    triangles.emplace_back(topRightZ);
+    triangles.emplace_back(topLeftZ);
 }
