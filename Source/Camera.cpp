@@ -10,14 +10,14 @@ Camera::Camera() {
     pitch = 0.0f;
 }
 
-Vector3 Camera::getDirection() {
-
-}
-
-Vector3 Camera::getRight() {
-
-}
-
-Matrix4 Camera::getViewMatrix() {
-
-}
+// Vector3 Camera::getDirection() {
+//
+// }
+//
+// Vector3 Camera::getRight() {
+//
+// }
+//
+// Matrix4 Camera::getViewMatrix() {
+//
+// }

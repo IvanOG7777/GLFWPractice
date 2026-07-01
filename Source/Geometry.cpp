@@ -146,4 +146,6 @@ std:: vector<Vector3> makeCube() {
     triangles.emplace_back(topRightZ);
     triangles.emplace_back(topRight);
     //
+
+    return triangles;
 }

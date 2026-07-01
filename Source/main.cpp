@@ -72,20 +72,31 @@ int main() {
 
     std::vector<Vector3> grid = makeGrid(4);
     std::vector<Vector3> square = makeSquare(); // creates square in its own local space
-    std::vector<Vector3> mvpSquare;
+    std::vector<Vector3> cube = makeCube();
 
-    Matrix4 translation = Matrix4::makeTranslation(0, 0, -10);
+    Matrix4 translation = Matrix4::makeTranslation(0, 0, -100);
+    Matrix4 translation2 = Matrix4::makeTranslation(-20, 0, -50);
     Matrix4 projection = Matrix4:: makePerspective(toRadians(45), W/H, 0.1, 1000);
     Matrix4 MVP = projection * translation;
+    Matrix4 cubeMVP = projection * translation2;
+
 
 
     GLfloat matrix[16]; // stores the points in flatted array in row major order
+    GLfloat cubeMatrix[16];
     int index = 0;
     for (int r = 0; r < MVP.getRow(); r++) {
         for (int c = 0; c < MVP.getCol(); c++) {
             float val = MVP.get(r, c);
-            std:: cout << val << std:: endl;
             matrix[index++] = val;
+        }
+    }
+
+    index = 0;
+    for (int r = 0; r < cubeMVP.getRow(); r++) {
+        for (int c = 0; c < cubeMVP.getCol(); c++) {
+            float val = cubeMVP.get(r, c);
+            cubeMatrix[index++] = val;
         }
     }
 
@@ -97,8 +108,8 @@ int main() {
         return -1;
     }
 
-    GLuint gridVAO = 0, squareVAO = 0, tSquareVAO = 0, tXSquareVAO = 0;
-    GLuint gridVBO = 0, squareVBO = 0, tSquareVBO = 0, tXSquareVBO = 0;
+    GLuint gridVAO = 0, squareVAO = 0, cubeVAO = 0;
+    GLuint gridVBO = 0, squareVBO = 0, cubeVBO = 0;
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertexShader, nullptr);
@@ -158,6 +169,16 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    glGenVertexArrays(1, &cubeVAO);
+    glGenBuffers(1, &cubeVBO);
+    glBindVertexArray(cubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+    glBufferData(GL_ARRAY_BUFFER, cube.size() * sizeof(Vector3), cube.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
     while (!glfwWindowShouldClose(window)) {
         int w = W;
         int h = H;
@@ -165,11 +186,20 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(threeDProgram);
+
         glUniformMatrix4fv(uMVP, 1, GL_TRUE, matrix);
 
         glBindVertexArray(squareVAO);
         glUniform3f(uColorLoc, 0.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(square.size()));
+
+        glUniformMatrix4fv(uMVP, 1, GL_TRUE, cubeMatrix);
+
+        glBindVertexArray(cubeVAO);
+        glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(square.size()));
+
+
 
         glfwPollEvents();
         glfwSwapBuffers(window);
