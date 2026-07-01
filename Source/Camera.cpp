@@ -37,6 +37,8 @@ Vector3 Camera::getRight() {
 Matrix4 Camera::getViewMatrix() {
     auto direction = getDirection();
     auto target = position + direction;
+    std:: cout << "Direction: " << direction << std:: endl;
+    std:: cout << "Target: " << target << std:: endl;
     Matrix4 resultingMatrix = Matrix4::makeLookAt(position, target, worldUp);
 
     return resultingMatrix;
@@ -46,6 +48,12 @@ void Camera::setPosition(Vector3 &passedPosition) {
     position.x = passedPosition.x;
     position.y = passedPosition.y;
     position.z = passedPosition.z;
+}
+
+void Camera::setPosition(float passedX, float passedY, float passedZ) {
+    position.x = passedX;
+    position.y = passedY;
+    position.z = passedZ;
 }
 
 void Camera::setYaw(float yawRadians) {

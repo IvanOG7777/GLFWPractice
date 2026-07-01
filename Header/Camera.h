@@ -24,6 +24,7 @@ public:
     Matrix4 getViewMatrix();
 
     void setPosition(Vector3 &passedPosition);
+    void setPosition(float passedX,float passedY, float passedZ);
     void setYaw(float yawRadians);
     void setPitch(float pitchRadians);
 

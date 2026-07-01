@@ -72,9 +72,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     Camera camera;
-    camera.setPitch(toRadians(45));
-    std:: cout << camera.getDirection() << std:: endl;
-    return 0;
+    camera.setPosition(-100, 0, 5);
 
     std::vector<Vector3> grid = makeGrid(4);
     std::vector<Vector3> square = makeSquare(); // creates square in its own local space
@@ -85,7 +83,7 @@ int main() {
 
     Matrix4 projection = Matrix4:: makePerspective(toRadians(45), W/H, 0.1, 1000);
 
-    Matrix4 view = Matrix4::makeLookAt({5, 8, 10}, {0, 0, 0}, {0, 1, 0});
+    Matrix4 view = camera.getViewMatrix();
 
     Matrix4 MVP = projection * view * translation;
     Matrix4 cubeMVP = projection * view * translation2;
@@ -206,8 +204,8 @@ int main() {
         glUniformMatrix4fv(uMVP, 1, GL_TRUE, cubeMatrix);
 
         glBindVertexArray(cubeVAO);
-        glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(cube.size()));
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cube.size()));
 
 
 
