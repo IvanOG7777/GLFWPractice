@@ -12,6 +12,8 @@ Camera::Camera() {
     // both must be in radians
     yaw = 0.0f; // left and right (horizontal) rotation
     pitch = 0.0f; // up and down (vertical) rotation
+    currentYaw = 0.0f;
+    currentPitch = 0.0f;
 }
 
 // a normalized vector as to where the camera points at in space

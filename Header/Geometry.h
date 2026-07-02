@@ -8,6 +8,7 @@
 #include <vector>
 #include <glm/glm/glm.hpp>
 #include "Constants.h"
+#include "Camera.h"
 
 std:: vector<glm::vec3> makeGrid(int slices);
 

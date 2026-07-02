@@ -62,6 +62,8 @@ float toRadians(float angleDegrees) {
     return angleDegrees * (PI/180.0f);
 }
 
+
+
 int main() {
     if (!glfwInit()) {
         std::cerr << "GLFW INIT ERROR \n";
@@ -72,6 +74,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    SceneState sceneState {};
     Camera camera;
 
     camera.setPosition(0, 1.5f, 10);
@@ -92,6 +95,8 @@ int main() {
     glm::mat4 MVP = projection * view * translation;
     glm::mat4 cubeMVP = projection * lookAtMatrix * translation2;
 
+    sceneState.camera = &camera;
+
 
 
     GLFWwindow *window = createWindow();
@@ -100,6 +105,9 @@ int main() {
         std::cerr << "GLAD INIT ERROR\n";
         return -1;
     }
+
+    glfwSetWindowUserPointer(window, &sceneState);
+    glfwSetKeyCallback(window, keyboardCallback);
 
     GLuint gridVAO = 0, squareVAO = 0, cubeVAO = 0;
     GLuint gridVBO = 0, squareVBO = 0, cubeVBO = 0;
@@ -184,8 +192,9 @@ int main() {
 
         float radius = 10.0f;
         float camX = std::sinf(static_cast<float>(glfwGetTime())) * radius;
+        float camY = (std::sinf(static_cast<float>(glfwGetTime())) + std::cosf(static_cast<float>(glfwGetTime())))  * radius;
         float camZ = std::cosf(static_cast<float>(glfwGetTime())) * radius;
-        camera.setPosition(camX, 0.0f, camZ);
+        camera.setPosition(camX, camY, camZ);
 
         lookAtMatrix = glm::lookAt(camera.getPosition(), {0.0f,0.0f,0.0f}, {0.0f, 1.0f, 0.0f});
 

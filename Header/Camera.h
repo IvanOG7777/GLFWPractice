@@ -14,6 +14,12 @@ private:
     glm::vec3 worldUp;
     float yaw; // left and right (horizontal) rotation
     float pitch; // up and down (vertical) rotation
+public:
+    float currentYaw;
+    float currentPitch;
+    float currentX;
+    float currentY;
+    float currentZ;
 
 public:
     Camera();
