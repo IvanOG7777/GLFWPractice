@@ -75,3 +75,7 @@ float &Camera::getYaw() {
 float &Camera::getPitch() {
     return pitch;
 }
+
+void Camera::move(GLFWwindow *window, float deltaTime) {
+    
+}

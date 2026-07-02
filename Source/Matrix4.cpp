@@ -221,8 +221,8 @@ Matrix4 Matrix4::makeLookAt(Vector3 eye, Vector3 target, Vector3 worldUp) {
     resultingMatrix.set(2, 1, forward.y);
     resultingMatrix.set(2, 2, forward.z);
 
-    resultingMatrix.set(3, 0, -(right.scalarProduct(eye)));
-    resultingMatrix.set(3, 1, -(up.scalarProduct(eye)));
+    resultingMatrix.set(0, 3, -(right.scalarProduct(eye)));
+    resultingMatrix.set(1, 3, -(up.scalarProduct(eye)));
     resultingMatrix.set(2, 3, -(forward.scalarProduct(eye)));
     resultingMatrix.set(3, 3, 1);
 

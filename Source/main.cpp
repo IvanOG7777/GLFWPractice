@@ -72,7 +72,14 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     Camera camera;
-    camera.setPosition(-100, 0, 5);
+
+    camera.setPosition(6, 4, 5);
+    camera.setPitch(toRadians(-40));
+    camera.setYaw(toRadians(-30));
+
+    auto time = glfwGetTime();
+    std:: cout << time << std:: endl;
+    return 0;
 
     std::vector<Vector3> grid = makeGrid(4);
     std::vector<Vector3> square = makeSquare(); // creates square in its own local space

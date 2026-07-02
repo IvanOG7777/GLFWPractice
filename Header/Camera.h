@@ -6,6 +6,7 @@
 #define GLFWPRACTICE_CAMERA_H
 
 #include "Matrix4.h"
+#include "GLFW/glfw3.h"
 
 class Camera {
 private:
@@ -31,6 +32,8 @@ public:
     Vector3 &getPosition();
     float &getYaw();
     float &getPitch();
+
+    void move(GLFWwindow *window, float deltaTime);
 
 };
 
