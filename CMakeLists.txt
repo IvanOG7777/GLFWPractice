@@ -12,13 +12,7 @@ add_executable(GLWFPractice
         Source/GLUtils.cpp
         Header/Geometry.h
         Source/Geometry.cpp
-        Header/Vector3.h
-        Source/Vector3.cpp
         Header/Constants.h
-        Header/Matrix4.h
-        Source/Matrix4.cpp
-        Header/Vector4.h
-        Source/Vector4.cpp
         Header/Camera.h
         Source/Camera.cpp
 )

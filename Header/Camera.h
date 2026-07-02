@@ -5,31 +5,31 @@
 #ifndef GLFWPRACTICE_CAMERA_H
 #define GLFWPRACTICE_CAMERA_H
 
-#include "Matrix4.h"
+#include <glm/glm/glm.hpp>
 #include "GLFW/glfw3.h"
 
 class Camera {
 private:
-    Vector3 position;
-    Vector3 worldUp;
+    glm::vec3 position;
+    glm::vec3 worldUp;
     float yaw; // left and right (horizontal) rotation
     float pitch; // up and down (vertical) rotation
 
 public:
     Camera();
 
-    Vector3 getDirection() const;
+    glm::vec3 getDirection() const;
 
-    Vector3 getRight();
+    glm::vec3 getRight();
 
-    Matrix4 getViewMatrix();
+    glm::mat4 getViewMatrix();
 
-    void setPosition(Vector3 &passedPosition);
+    void setPosition(glm::vec3 &passedPosition);
     void setPosition(float passedX,float passedY, float passedZ);
     void setYaw(float yawRadians);
     void setPitch(float pitchRadians);
 
-    Vector3 &getPosition();
+    glm::vec3 &getPosition();
     float &getYaw();
     float &getPitch();
 

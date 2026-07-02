@@ -4,9 +4,9 @@
 
 #include "../Header/Geometry.h"
 
-std::vector<Vector3> makeGrid(int slices) {
-    std:: vector<Vector3> points;
-    std:: vector<Vector3> triangles;
+std::vector<glm::vec3> makeGrid(int slices) {
+    std:: vector<glm::vec3> points;
+    std:: vector<glm::vec3> triangles;
     for (int row = 0; row <= slices; row++) {
         for (int col = 0; col <= slices; col++) {
             float x = static_cast<float>(row) / static_cast<float>(slices) * W;
@@ -37,14 +37,14 @@ std::vector<Vector3> makeGrid(int slices) {
 }
 
 // creates a local space square.
-std::vector<Vector3> makeSquare() {
+std::vector<glm::vec3> makeSquare() {
 
-    std::vector<Vector3> triangles;
+    std::vector<glm::vec3> triangles;
 
-    Vector3 bottomLeft = {-1.0f, -1.0f, 0};
-    Vector3 bottomRight = {1.0f, -1.0f, 0};
-    Vector3 topLeft = {-1.0f, 1.0f, 0};
-    Vector3 topRight = {1.0f, 1.0f, 0};
+    glm::vec3 bottomLeft = {-1.0f, -1.0f, 0};
+    glm::vec3 bottomRight = {1.0f, -1.0f, 0};
+    glm::vec3 topLeft = {-1.0f, 1.0f, 0};
+    glm::vec3 topRight = {1.0f, 1.0f, 0};
 
 
     // for GL_LINES, connects points
@@ -72,18 +72,18 @@ std::vector<Vector3> makeSquare() {
     return triangles;
 }
 
-std:: vector<Vector3> makeCube() {
-    std::vector<Vector3> triangles;
+std:: vector<glm::vec3> makeCube() {
+    std::vector<glm::vec3> triangles;
 
-    Vector3 bottomLeft = {-1.0f, -1.0f, 0};
-    Vector3 bottomRight = {1.0f, -1.0f, 0};
-    Vector3 topLeft = {-1.0f, 1.0f, 0};
-    Vector3 topRight = {1.0f, 1.0f, 0};
+    glm::vec3 bottomLeft = {-1.0f, -1.0f, 0};
+    glm::vec3 bottomRight = {1.0f, -1.0f, 0};
+    glm::vec3 topLeft = {-1.0f, 1.0f, 0};
+    glm::vec3 topRight = {1.0f, 1.0f, 0};
 
-    Vector3 bottomLeftZ = {-1.0f, -1.0f, -1};
-    Vector3 bottomRightZ = {1.0f, -1.0f, -1};
-    Vector3 topLeftZ = {-1.0f, 1.0f, -1};
-    Vector3 topRightZ = {1.0f, 1.0f, -1};
+    glm::vec3 bottomLeftZ = {-1.0f, -1.0f, -1};
+    glm::vec3 bottomRightZ = {1.0f, -1.0f, -1};
+    glm::vec3 topLeftZ = {-1.0f, 1.0f, -1};
+    glm::vec3 topRightZ = {1.0f, 1.0f, -1};
 
     //Faces of the cube;
 

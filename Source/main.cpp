@@ -13,9 +13,7 @@
 
 #include "../Header/Camera.h"
 #include "../Header/GLUtils.h"
-#include "../Header/Vector3.h"
 #include "../Header/Geometry.h"
-#include "../Header/Matrix4.h"
 #include "../Header/Constants.h"
 
 
@@ -80,39 +78,20 @@ int main() {
     camera.setPitch(toRadians(-40));
     camera.setYaw(toRadians(-30));
 
-    std::vector<Vector3> grid = makeGrid(4);
-    std::vector<Vector3> square = makeSquare(); // creates square in its own local space
-    std::vector<Vector3> cube = makeCube();
+    std::vector<glm::vec3> grid = makeGrid(4);
+    std::vector<glm::vec3> square = makeSquare(); // creates square in its own local space
+    std::vector<glm::vec3> cube = makeCube();
 
-    Matrix4 translation = Matrix4::makeTranslation(-20, 0, -50);
-    Matrix4 translation2 = Matrix4::makeTranslation(0, 0, 0);
+    glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-20.f, 0.0f, -50.0f));
+    glm::mat4 translation2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
-    Matrix4 projection = Matrix4:: makePerspective(toRadians(45), W/H, 0.1, 1000);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
 
-    Matrix4 view = camera.getViewMatrix();
+    glm::mat4 view = camera.getViewMatrix();
 
-    Matrix4 MVP = projection * view * translation;
-    Matrix4 cubeMVP = projection * view * translation2;
+    glm::mat4 MVP = projection * view * translation;
+    glm::mat4 cubeMVP = projection * view * translation2;
 
-
-
-    GLfloat matrix[16]; // stores the points in flatted array in row major order
-    GLfloat cubeMatrix[16];
-    int index = 0;
-    for (int r = 0; r < MVP.getRow(); r++) {
-        for (int c = 0; c < MVP.getCol(); c++) {
-            float val = MVP.get(r, c);
-            matrix[index++] = val;
-        }
-    }
-
-    index = 0;
-    for (int r = 0; r < cubeMVP.getRow(); r++) {
-        for (int c = 0; c < cubeMVP.getCol(); c++) {
-            float val = cubeMVP.get(r, c);
-            cubeMatrix[index++] = val;
-        }
-    }
 
 
     GLFWwindow *window = createWindow();
@@ -167,8 +146,8 @@ int main() {
     glGenBuffers(1, &gridVBO);
     glBindVertexArray(gridVAO);
     glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-    glBufferData(GL_ARRAY_BUFFER, grid.size() * sizeof(Vector3), grid.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, grid.size() * sizeof(glm::vec3), grid.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -177,8 +156,8 @@ int main() {
     glGenBuffers(1, &squareVBO);
     glBindVertexArray(squareVAO);
     glBindBuffer(GL_ARRAY_BUFFER, squareVBO);
-    glBufferData(GL_ARRAY_BUFFER, square.size() * sizeof(Vector3), square.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, square.size() * sizeof(glm::vec3), square.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -187,8 +166,8 @@ int main() {
     glGenBuffers(1, &cubeVBO);
     glBindVertexArray(cubeVAO);
     glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    glBufferData(GL_ARRAY_BUFFER, cube.size() * sizeof(Vector3), cube.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, cube.size() * sizeof(glm::vec3), cube.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -201,14 +180,13 @@ int main() {
 
         glUseProgram(threeDProgram);
 
-        glUniformMatrix4fv(uMVP, 1, GL_TRUE, matrix);
-
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(MVP));
         glBindVertexArray(squareVAO);
         glUniform3f(uColorLoc, 0.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(square.size()));
 
-        glUniformMatrix4fv(uMVP, 1, GL_TRUE, cubeMatrix);
-
+        
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(cubeMVP));
         glBindVertexArray(cubeVAO);
         glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cube.size()));

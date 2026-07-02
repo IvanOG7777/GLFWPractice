@@ -4,6 +4,8 @@
 
 #include "../Header/Camera.h"
 
+#include "glm/glm/gtc/matrix_transform.hpp"
+
 Camera::Camera() {
     position = {0.0f,0.0f,0.0f};
     worldUp = {0, 1, 0};
@@ -13,38 +15,36 @@ Camera::Camera() {
 }
 
 // a normalized vector as to where the camera points at in space
-Vector3 Camera::getDirection() const {
+glm::vec3 Camera::getDirection() const {
     float x = std::cosf(pitch) * std:: sinf(yaw);
     float y = std::sinf(pitch);
     float z = -std::cosf(pitch) * std:: cosf(yaw);
 
-    Vector3 direction(x, y, z);
+    glm::vec3 direction(x, y, z);
 
-    direction.normalize();
+    direction = glm::normalize(direction);
 
     return direction;
 }
 
-Vector3 Camera::getRight() {
-    Vector3 direction = getDirection();
-    Vector3 right = direction % worldUp;
+glm::vec3 Camera::getRight() {
+    glm::vec3 direction = getDirection();
+    glm::vec3 right = glm::cross(direction, worldUp);
 
-    right.normalize();
+    right = glm::normalize(right);
 
     return right;
 }
 
-Matrix4 Camera::getViewMatrix() {
+glm::mat4 Camera::getViewMatrix() {
     auto direction = getDirection();
     auto target = position + direction;
-    std:: cout << "Direction: " << direction << std:: endl;
-    std:: cout << "Target: " << target << std:: endl;
-    Matrix4 resultingMatrix = Matrix4::makeLookAt(position, target, worldUp);
+    glm::mat4 resultingMatrix = glm::lookAt(position, target, worldUp);
 
     return resultingMatrix;
 }
 
-void Camera::setPosition(Vector3 &passedPosition) {
+void Camera::setPosition(glm::vec3 &passedPosition) {
     position.x = passedPosition.x;
     position.y = passedPosition.y;
     position.z = passedPosition.z;
@@ -64,7 +64,7 @@ void Camera::setPitch(float pitchRadians) {
     pitch = pitchRadians;
 }
 
-Vector3 &Camera::getPosition() {
+glm::vec3 &Camera::getPosition() {
     return position;
 }
 
