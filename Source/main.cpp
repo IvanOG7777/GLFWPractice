@@ -5,10 +5,13 @@
 #include <iostream>
 #include <vector>
 
-#include "../Header/Camera.h"
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
 
+#include "../Header/Camera.h"
 #include "../Header/GLUtils.h"
 #include "../Header/Vector3.h"
 #include "../Header/Geometry.h"
@@ -76,10 +79,6 @@ int main() {
     camera.setPosition(6, 4, 5);
     camera.setPitch(toRadians(-40));
     camera.setYaw(toRadians(-30));
-
-    auto time = glfwGetTime();
-    std:: cout << time << std:: endl;
-    return 0;
 
     std::vector<Vector3> grid = makeGrid(4);
     std::vector<Vector3> square = makeSquare(); // creates square in its own local space
