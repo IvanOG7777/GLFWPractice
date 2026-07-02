@@ -74,16 +74,14 @@ int main() {
 
     Camera camera;
 
-    camera.setPosition(6, 4, 5);
-    camera.setPitch(toRadians(-40));
-    camera.setYaw(toRadians(-30));
+    camera.setPosition(0, 1.5f, 10);
 
     std::vector<glm::vec3> grid = makeGrid(4);
     std::vector<glm::vec3> square = makeSquare(); // creates square in its own local space
     std::vector<glm::vec3> cube = makeCube();
 
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-20.f, 0.0f, -50.0f));
-    glm::mat4 translation2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    glm::mat4 translation2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)); // translates to world space
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
 
@@ -180,12 +178,22 @@ int main() {
 
         glUseProgram(threeDProgram);
 
+        float radius = 10.0f;
+        float camX = std::sinf(static_cast<float>(glfwGetTime())) * radius;
+        float camZ = std::cosf(static_cast<float>(glfwGetTime())) * radius;
+        camera.setPosition(camX, 0.0f, camZ);
+
+        view = camera.getViewMatrix();
+
+        cubeMVP = projection * view * translation2;
+        MVP = projection * view * translation;
+
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(MVP));
         glBindVertexArray(squareVAO);
         glUniform3f(uColorLoc, 0.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(square.size()));
 
-        
+
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(cubeMVP));
         glBindVertexArray(cubeVAO);
         glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
