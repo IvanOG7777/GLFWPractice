@@ -87,8 +87,10 @@ int main() {
 
     glm::mat4 view = camera.getViewMatrix();
 
+    glm::mat4 lookAtMatrix = glm::lookAt(camera.getPosition(), {0.0f,0.0f,0.0f}, {0.0f, 1.0f, 0.0f});
+
     glm::mat4 MVP = projection * view * translation;
-    glm::mat4 cubeMVP = projection * view * translation2;
+    glm::mat4 cubeMVP = projection * lookAtMatrix * translation2;
 
 
 
@@ -170,11 +172,13 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    glEnable(GL_DEPTH_TEST);
+
     while (!glfwWindowShouldClose(window)) {
         int w = W;
         int h = H;
         glfwGetFramebufferSize(window, &w, &h);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(threeDProgram);
 
@@ -183,10 +187,10 @@ int main() {
         float camZ = std::cosf(static_cast<float>(glfwGetTime())) * radius;
         camera.setPosition(camX, 0.0f, camZ);
 
-        view = camera.getViewMatrix();
+        lookAtMatrix = glm::lookAt(camera.getPosition(), {0.0f,0.0f,0.0f}, {0.0f, 1.0f, 0.0f});
 
-        cubeMVP = projection * view * translation2;
-        MVP = projection * view * translation;
+        cubeMVP = projection * lookAtMatrix * translation2;
+        MVP = projection * lookAtMatrix * translation;
 
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(MVP));
         glBindVertexArray(squareVAO);
