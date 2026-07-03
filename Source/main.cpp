@@ -63,7 +63,6 @@ float toRadians(float angleDegrees) {
 }
 
 
-
 int main() {
     if (!glfwInit()) {
         std::cerr << "GLFW INIT ERROR \n";
@@ -82,9 +81,11 @@ int main() {
     std::vector<glm::vec3> grid = makeGrid(4);
     std::vector<glm::vec3> square = makeSquare(); // creates square in its own local space
     std::vector<glm::vec3> cube = makeCube();
+    std::vector<glm::vec3> sphere = makeSphere();
 
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-20.f, 0.0f, -50.0f));
     glm::mat4 translation2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)); // translates to world space
+    glm::mat4 translation3 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 0.0f)); // translates to world space
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
 
@@ -94,6 +95,7 @@ int main() {
 
     glm::mat4 MVP;
     glm::mat4 cubeMVP;
+    glm::mat4 sphereMVP;
 
     sceneState.camera = &camera;
 
@@ -112,8 +114,8 @@ int main() {
     glfwSetCursorPosCallback(window, cursorPositionCallback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    GLuint gridVAO = 0, squareVAO = 0, cubeVAO = 0;
-    GLuint gridVBO = 0, squareVBO = 0, cubeVBO = 0;
+    GLuint gridVAO = 0, squareVAO = 0, cubeVAO = 0, sphereVAO = 0;
+    GLuint gridVBO = 0, squareVBO = 0, cubeVBO = 0, sphereVBO = 0;
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertexShader, nullptr);
@@ -183,6 +185,16 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    glGenVertexArrays(1, &sphereVAO);
+    glGenBuffers(1, &sphereVBO);
+    glBindVertexArray(sphereVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+    glBufferData(GL_ARRAY_BUFFER, sphere.size() * sizeof(glm::vec3), sphere.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
     glEnable(GL_DEPTH_TEST);
 
     auto startTime = glfwGetTime();
@@ -190,11 +202,38 @@ int main() {
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - startTime;
         startTime = currentTime;
-        camera.cameraSpeed = 15.0f;
+        camera.cameraSpeed = 10.0f;
         int w = W;
         int h = H;
         glfwGetFramebufferSize(window, &w, &h);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        int wKey = glfwGetKey(window, GLFW_KEY_W);
+        int aKey = glfwGetKey(window, GLFW_KEY_A);
+        int sKey = glfwGetKey(window, GLFW_KEY_S);
+        int dKey = glfwGetKey(window, GLFW_KEY_D);
+
+        camera.cameraSpeed *= static_cast<float>(deltaTime);
+        glm::vec3 position = camera.getPosition();
+        glm::vec3 direction = camera.getDirection();
+        glm::vec3 right = camera.getRight();
+
+        // keyboard polling
+        if (wKey == GLFW_PRESS) {
+            position += direction * camera.cameraSpeed;
+        }
+        if (sKey == GLFW_PRESS) {
+            position -= direction * camera.cameraSpeed;
+        }
+        if (dKey == GLFW_PRESS) {
+            position += right * camera.cameraSpeed;
+        }
+        if (aKey== GLFW_PRESS) {
+            position -= right * camera.cameraSpeed;
+        }
+        // keyboard polling
+
+        camera.setPosition(position);
 
         glUseProgram(threeDProgram);
 
@@ -204,12 +243,11 @@ int main() {
         // float camZ = std::cosf(static_cast<float>(glfwGetTime())) * radius;
         // camera.setPosition(camX, camY, camZ);
 
-        camera.cameraSpeed *= static_cast<float>(deltaTime);
-
         view = camera.getViewMatrix();
 
         cubeMVP = projection * view * translation2;
         MVP = projection * view * translation;
+        sphereMVP = projection * view * translation3;
 
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(MVP));
         glBindVertexArray(squareVAO);
@@ -222,6 +260,10 @@ int main() {
         glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cube.size()));
 
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
+        glBindVertexArray(sphereVAO);
+        glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(sphere.size()));
 
 
         glfwPollEvents();

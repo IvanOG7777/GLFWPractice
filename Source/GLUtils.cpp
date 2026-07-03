@@ -34,33 +34,27 @@ void keyboardCallback(GLFWwindow *window, int key, int scancode, int action, int
 
     if (key == GLFW_KEY_W && action == GLFW_REPEAT) {
         position += direction * speed;
-        std:: cout << "Moved forward" << std:: endl;
     }
 
     if (key == GLFW_KEY_S && action == GLFW_REPEAT) {
         position -= direction * speed;
-        std:: cout << "Moved backward" << std:: endl;
     }
 
     if (key == GLFW_KEY_D && action == GLFW_REPEAT) {
         position += right * speed;
-        std:: cout << "Moved right" << std:: endl;
     }
 
     if (key == GLFW_KEY_A && action == GLFW_REPEAT) {
         position -= right * speed;
-        std:: cout << "Moved left" << std:: endl;
     }
 
 
     if (key == GLFW_KEY_SPACE && action == GLFW_REPEAT) {
         position.y += speed;
-        std:: cout << "Moving up" << std:: endl;
     }
 
     if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_REPEAT) {
         position.y -= speed;
-        std:: cout << "Moving down" << std:: endl;
     }
 
     camera->setPosition(position);
@@ -72,8 +66,8 @@ void cursorPositionCallback(GLFWwindow *window, double positionX, double positio
 
     //
     if (camera->firstMove == true) {
-        camera->currentX = positionX;
-        camera->currentY = positionY;
+        camera->currentX = static_cast<float>(positionX);
+        camera->currentY = static_cast<float>(positionY);
         camera->firstMove = false;
         return;
     }
@@ -90,7 +84,7 @@ void cursorPositionCallback(GLFWwindow *window, double positionX, double positio
     camera->setYaw(yaw);
     camera->setPitch(pitch);
 
-    camera->currentX = positionX;
-    camera->currentY = positionY;
+    camera->currentX = static_cast<float>(positionX);
+    camera->currentY = static_cast<float>(positionY);
 
 }

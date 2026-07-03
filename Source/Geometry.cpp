@@ -151,10 +151,41 @@ std:: vector<glm::vec3> makeCube() {
 }
 
 std::vector<glm::vec3> makeSphere() {
-    std:: vector <glm::vec3> vertices;
-    int sectors = 32;
-    int stacks = 16;
+    std:: vector <glm::vec3> points;
+    std:: vector <glm::vec3> triangles;
 
-    for (int )
+    int stacks = 32; // rows
+    int sectors = 64; // columns
 
+    for (int row = 0; row <= stacks; row++) {
+        for (int col = 0; col <= sectors; col++) {
+            float phi = glm::pi<float>() * static_cast<float>(row) / static_cast<float>(stacks);
+            float theta = (2 * glm::pi<float>()) * static_cast<float>(col) / static_cast<float>(sectors);
+
+            float x = std:: cosf(theta) * std:: sinf(phi);
+            float y = std:: cosf(phi);
+            float z = std:: sinf(theta) * std:: sinf(phi);
+
+            points.emplace_back(x, y, z);
+        }
+    }
+
+    for (int row = 0; row < stacks; row++) {
+        for (int col = 0; col < sectors; col++) {
+            int bottomLeft = row * (sectors + 1) + col;
+            int bottomRight = row * (sectors + 1) + (col + 1);
+            int topLeft = (row + 1) * (sectors + 1) + col;
+            int topRight = (row + 1) * (sectors + 1) + (col + 1);
+
+            triangles.emplace_back(points[bottomLeft]);
+            triangles.emplace_back(points[topLeft]);
+            triangles.emplace_back(points[bottomRight]);
+
+            triangles.emplace_back(points[bottomRight]);
+            triangles.emplace_back(points[topRight]);
+            triangles.emplace_back(points[topLeft]);
+        }
+    }
+
+    return triangles;
 }
