@@ -149,3 +149,12 @@ std:: vector<glm::vec3> makeCube() {
 
     return triangles;
 }
+
+std::vector<glm::vec3> makeSphere() {
+    std:: vector <glm::vec3> vertices;
+    int sectors = 32;
+    int stacks = 16;
+
+    for (int )
+
+}

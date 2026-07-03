@@ -16,4 +16,6 @@ std::vector<glm::vec3> makeSquare();
 
 std:: vector<glm::vec3> makeCube();
 
+std:: vector<glm::vec3> makeSphere();
+
 #endif //GLFWPRACTICE_GEOMETRY_H
