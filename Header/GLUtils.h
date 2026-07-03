@@ -17,4 +17,6 @@ GLFWwindow *createWindow();
 
 void keyboardCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
+void cursorPositionCallback(GLFWwindow *window, double positionX, double positionY);
+
 #endif //GLWFPRACTICE_GLUTILS_H

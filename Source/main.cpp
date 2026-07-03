@@ -92,8 +92,8 @@ int main() {
 
     glm::mat4 lookAtMatrix = glm::lookAt(camera.getPosition(), {0.0f,0.0f,0.0f}, {0.0f, 1.0f, 0.0f});
 
-    glm::mat4 MVP = projection * view * translation;
-    glm::mat4 cubeMVP = projection * lookAtMatrix * translation2;
+    glm::mat4 MVP;
+    glm::mat4 cubeMVP;
 
     sceneState.camera = &camera;
 
@@ -107,7 +107,9 @@ int main() {
     }
 
     glfwSetWindowUserPointer(window, &sceneState);
+
     glfwSetKeyCallback(window, keyboardCallback);
+    // glfwSetCursorPosCallback(window, cursorPositionCallback);
 
     GLuint gridVAO = 0, squareVAO = 0, cubeVAO = 0;
     GLuint gridVBO = 0, squareVBO = 0, cubeVBO = 0;
@@ -182,7 +184,12 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
+    auto startTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
+        auto currentTime = glfwGetTime();
+        auto deltaTime = currentTime - startTime;
+        startTime = currentTime;
+        camera.cameraSpeed = 5.0f;
         int w = W;
         int h = H;
         glfwGetFramebufferSize(window, &w, &h);
@@ -190,11 +197,13 @@ int main() {
 
         glUseProgram(threeDProgram);
 
-        float radius = 10.0f;
-        float camX = std::sinf(static_cast<float>(glfwGetTime())) * radius;
-        float camY = (std::sinf(static_cast<float>(glfwGetTime())) + std::cosf(static_cast<float>(glfwGetTime())))  * radius;
-        float camZ = std::cosf(static_cast<float>(glfwGetTime())) * radius;
-        camera.setPosition(camX, camY, camZ);
+        // float radius = 10.0f;
+        // float camX = std::sinf(static_cast<float>(glfwGetTime())) * radius;
+        // float camY = (std::sinf(static_cast<float>(glfwGetTime())) + std::cosf(static_cast<float>(glfwGetTime())))  * radius;
+        // float camZ = std::cosf(static_cast<float>(glfwGetTime())) * radius;
+        // camera.setPosition(camX, camY, camZ);
+
+        camera.cameraSpeed *= static_cast<float>(deltaTime);
 
         lookAtMatrix = glm::lookAt(camera.getPosition(), {0.0f,0.0f,0.0f}, {0.0f, 1.0f, 0.0f});
 

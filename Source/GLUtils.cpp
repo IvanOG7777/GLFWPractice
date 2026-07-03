@@ -23,20 +23,42 @@ GLFWwindow *createWindow() {
 void keyboardCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     auto *state = static_cast<SceneState*>(glfwGetWindowUserPointer(window));
     auto *camera = state->camera;
+    glm::vec3 position = camera->getPosition();
+    float speed = camera->cameraSpeed;
 
-    if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-        camera->setPosition(camera->getPosition().x , camera->getPosition().z, camera->currentZ++);
+    if (key == GLFW_KEY_W && action == GLFW_REPEAT) {
+        position.z -= speed;
+        std:: cout << "Moved forward" << std:: endl;
     }
 
-    if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-        camera->setPosition(camera->cux-- , camera->getPosition().z, camera->currentZ--);
+    if (key == GLFW_KEY_S && action == GLFW_REPEAT) {
+        position.z += speed;
+        std:: cout << "Moved backward" << std:: endl;
     }
 
-    if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-        camera->setPosition(camera->getPosition().x , camera->getPosition().z, camera->currentZ--);
+    if (key == GLFW_KEY_A && action == GLFW_REPEAT) {
+        position.x -= speed;
+        std:: cout << "Moved left" << std:: endl;
     }
 
-    if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-
+    if (key == GLFW_KEY_D && action == GLFW_REPEAT) {
+        position.x += speed;
+        std:: cout << "Moved right" << std:: endl;
     }
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_REPEAT) {
+        position.y += speed;
+        std:: cout << "Moving up" << std:: endl;
+    }
+
+    if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_REPEAT) {
+        position.y -= speed;
+        std:: cout << "Moving down" << std:: endl;
+    }
+
+    camera->setPosition(position);
 }
+
+// void cursorPositionCallBack(GLFWwindow *window, double positionX, double positionY) {
+//     auto *state = static_cast<SceneState*>(glfwGetWindowUserPointer(window));
+// }

@@ -20,6 +20,7 @@ public:
     float currentX;
     float currentY;
     float currentZ;
+    float cameraSpeed;
 
 public:
     Camera();
