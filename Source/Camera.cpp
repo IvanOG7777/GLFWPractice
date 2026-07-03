@@ -14,7 +14,7 @@ Camera::Camera() {
     pitch = 0.0f; // up and down (vertical) rotation
     currentYaw = 0.0f;
     currentPitch = 0.0f;
-    cameraSpeed = 5.0f;
+    cameraSpeed = 15.0f;
     firstMove = true;
 }
 

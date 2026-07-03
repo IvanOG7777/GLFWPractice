@@ -110,7 +110,7 @@ int main() {
 
     glfwSetKeyCallback(window, keyboardCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     GLuint gridVAO = 0, squareVAO = 0, cubeVAO = 0;
     GLuint gridVBO = 0, squareVBO = 0, cubeVBO = 0;
@@ -190,7 +190,7 @@ int main() {
         auto currentTime = glfwGetTime();
         auto deltaTime = currentTime - startTime;
         startTime = currentTime;
-        camera.cameraSpeed = 5.0f;
+        camera.cameraSpeed = 15.0f;
         int w = W;
         int h = H;
         glfwGetFramebufferSize(window, &w, &h);
