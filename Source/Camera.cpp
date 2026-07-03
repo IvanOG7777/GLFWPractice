@@ -15,6 +15,7 @@ Camera::Camera() {
     currentYaw = 0.0f;
     currentPitch = 0.0f;
     cameraSpeed = 5.0f;
+    firstMove = true;
 }
 
 // a normalized vector as to where the camera points at in space
@@ -77,8 +78,4 @@ float &Camera::getYaw() {
 
 float &Camera::getPitch() {
     return pitch;
-}
-
-void Camera::move(GLFWwindow *window, float deltaTime) {
-    
 }

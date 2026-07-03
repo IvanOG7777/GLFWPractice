@@ -59,6 +59,31 @@ void keyboardCallback(GLFWwindow *window, int key, int scancode, int action, int
     camera->setPosition(position);
 }
 
-// void cursorPositionCallBack(GLFWwindow *window, double positionX, double positionY) {
-//     auto *state = static_cast<SceneState*>(glfwGetWindowUserPointer(window));
-// }
+void cursorPositionCallback(GLFWwindow *window, double positionX, double positionY) {
+    auto *state = static_cast<SceneState*>(glfwGetWindowUserPointer(window));
+    auto *camera = state->camera;
+
+    //
+    if (camera->firstMove == true) {
+        camera->currentX = positionX;
+        camera->currentY = positionY;
+        camera->firstMove = false;
+        return;
+    }
+
+    float deltaX = camera->currentX - static_cast<float>(positionX);
+    float deltaY = camera->currentY - static_cast<float>(positionY);
+
+    float pitch = camera->getPitch();
+    float yaw = camera->getYaw();
+
+    yaw -= deltaX * 0.001f;
+    pitch += deltaY * 0.001f;
+
+    camera->setYaw(yaw);
+    camera->setPitch(pitch);
+
+    camera->currentX = positionX;
+    camera->currentY = positionY;
+
+}

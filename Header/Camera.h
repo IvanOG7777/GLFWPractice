@@ -21,6 +21,7 @@ public:
     float currentY;
     float currentZ;
     float cameraSpeed;
+    bool firstMove;
 
 public:
     Camera();
@@ -39,8 +40,6 @@ public:
     glm::vec3 &getPosition();
     float &getYaw();
     float &getPitch();
-
-    void move(GLFWwindow *window, float deltaTime);
 
 };
 

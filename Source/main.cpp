@@ -109,7 +109,8 @@ int main() {
     glfwSetWindowUserPointer(window, &sceneState);
 
     glfwSetKeyCallback(window, keyboardCallback);
-    // glfwSetCursorPosCallback(window, cursorPositionCallback);
+    glfwSetCursorPosCallback(window, cursorPositionCallback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
 
     GLuint gridVAO = 0, squareVAO = 0, cubeVAO = 0;
     GLuint gridVBO = 0, squareVBO = 0, cubeVBO = 0;
@@ -205,10 +206,10 @@ int main() {
 
         camera.cameraSpeed *= static_cast<float>(deltaTime);
 
-        lookAtMatrix = glm::lookAt(camera.getPosition(), {0.0f,0.0f,0.0f}, {0.0f, 1.0f, 0.0f});
+        view = camera.getViewMatrix();
 
-        cubeMVP = projection * lookAtMatrix * translation2;
-        MVP = projection * lookAtMatrix * translation;
+        cubeMVP = projection * view * translation2;
+        MVP = projection * view * translation;
 
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(MVP));
         glBindVertexArray(squareVAO);
