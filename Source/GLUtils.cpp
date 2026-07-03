@@ -24,27 +24,34 @@ void keyboardCallback(GLFWwindow *window, int key, int scancode, int action, int
     auto *state = static_cast<SceneState*>(glfwGetWindowUserPointer(window));
     auto *camera = state->camera;
     glm::vec3 position = camera->getPosition();
+    glm::vec3 direction = camera->getDirection();
+    glm::vec3 right = camera->getRight();
     float speed = camera->cameraSpeed;
 
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
     if (key == GLFW_KEY_W && action == GLFW_REPEAT) {
-        position.z -= speed;
+        position += direction * speed;
         std:: cout << "Moved forward" << std:: endl;
     }
 
     if (key == GLFW_KEY_S && action == GLFW_REPEAT) {
-        position.z += speed;
+        position -= direction * speed;
         std:: cout << "Moved backward" << std:: endl;
     }
 
+    if (key == GLFW_KEY_D && action == GLFW_REPEAT) {
+        position += right * speed;
+        std:: cout << "Moved right" << std:: endl;
+    }
+
     if (key == GLFW_KEY_A && action == GLFW_REPEAT) {
-        position.x -= speed;
+        position -= right * speed;
         std:: cout << "Moved left" << std:: endl;
     }
 
-    if (key == GLFW_KEY_D && action == GLFW_REPEAT) {
-        position.x += speed;
-        std:: cout << "Moved right" << std:: endl;
-    }
 
     if (key == GLFW_KEY_SPACE && action == GLFW_REPEAT) {
         position.y += speed;
