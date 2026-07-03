@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include "glm/glm/gtc/constants.hpp"
+
 //TODO automatically get users window size and set to full screen
 GLFWwindow *createWindow() {
     GLFWwindow *window = glfwCreateWindow(1920, 1080, "GLFW Practice", nullptr, nullptr);
@@ -80,6 +82,16 @@ void cursorPositionCallback(GLFWwindow *window, double positionX, double positio
 
     yaw -= deltaX * 0.001f;
     pitch += deltaY * 0.001f;
+
+    float maxPitch = glm::radians(89.0f);
+
+    if (pitch < -maxPitch) {
+        pitch = -maxPitch;
+    }
+
+    if (pitch > maxPitch) {
+        pitch = maxPitch;
+    }
 
     camera->setYaw(yaw);
     camera->setPitch(pitch);

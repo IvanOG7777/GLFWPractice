@@ -150,7 +150,7 @@ std:: vector<glm::vec3> makeCube() {
     return triangles;
 }
 
-std::vector<glm::vec3> makeSphere() {
+std::vector<glm::vec3> makeSphere(float radius) {
     std:: vector <glm::vec3> points;
     std:: vector <glm::vec3> triangles;
 
@@ -166,7 +166,7 @@ std::vector<glm::vec3> makeSphere() {
             float y = std:: cosf(phi);
             float z = std:: sinf(theta) * std:: sinf(phi);
 
-            points.emplace_back(x, y, z);
+            points.emplace_back(x * radius, y * radius, z * radius);
         }
     }
 

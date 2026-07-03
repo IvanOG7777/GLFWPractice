@@ -81,11 +81,32 @@ int main() {
     std::vector<glm::vec3> grid = makeGrid(4);
     std::vector<glm::vec3> square = makeSquare(); // creates square in its own local space
     std::vector<glm::vec3> cube = makeCube();
-    std::vector<glm::vec3> sphere = makeSphere();
+    std::vector<glm::vec3> sphere = makeSphere(5);
+    std:: vector<std::vector<glm::vec3>> spheres;
+
+    float radius = 1.0f;
+    for (int i = 0; i < 5; i++) {
+        auto sphereL = makeSphere(radius * 1.5f);
+        radius *= 1.5f;
+        spheres.emplace_back(sphereL);
+    }
 
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-20.f, 0.0f, -50.0f));
-    glm::mat4 translation2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)); // translates to world space
-    glm::mat4 translation3 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 0.0f)); // translates to world space
+    glm::mat4 translationCube = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)); // translates to world space
+    glm::mat4 translationSphere = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)); // translates to world space
+    glm::mat4 translation1 = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 0.0f)); // translates to world space
+    glm::mat4 translation2 = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, -10.0f, 0.0f)); // translates to world space
+    glm::mat4 translation3 = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 10.0f, -10.0f)); // translates to world space
+    glm::mat4 translation4 = glm::translate(glm::mat4(1.0f), glm::vec3(20.0f, 0.0f, 0.0f)); // translates to world space
+    glm::mat4 translation5 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 20.0f, -15.0f)); // translates to world space
+
+    std:: vector<glm::mat4> translations;
+    translations.emplace_back(translation1);
+    translations.emplace_back(translation2);
+    translations.emplace_back(translation3);
+    translations.emplace_back(translation4);
+    translations.emplace_back(translation5);
+    int sphereIndex = 0;
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
 
@@ -212,6 +233,9 @@ int main() {
         int aKey = glfwGetKey(window, GLFW_KEY_A);
         int sKey = glfwGetKey(window, GLFW_KEY_S);
         int dKey = glfwGetKey(window, GLFW_KEY_D);
+        int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
+        int leftControlKey = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
+        int leftShift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT);
 
         camera.cameraSpeed *= static_cast<float>(deltaTime);
         glm::vec3 position = camera.getPosition();
@@ -231,23 +255,42 @@ int main() {
         if (aKey== GLFW_PRESS) {
             position -= right * camera.cameraSpeed;
         }
+        if (spaceKey == GLFW_PRESS) {
+            position.y += camera.cameraSpeed;
+        }
+        if (leftControlKey == GLFW_PRESS) {
+            position.y -= camera.cameraSpeed;
+        }
+
+        if (wKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position += direction *  (camera.cameraSpeed * 2);
+        }
+        if (sKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position -= direction *  (camera.cameraSpeed * 2);
+        }
+        if (dKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position += right *  (camera.cameraSpeed * 2);
+        }
+        if (aKey== GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position -= right * (camera.cameraSpeed * 2);
+        }
+        if (spaceKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position.y += camera.cameraSpeed * 2;
+        }
+        if (leftControlKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position.y -= camera.cameraSpeed * 2;
+        }
         // keyboard polling
 
         camera.setPosition(position);
 
         glUseProgram(threeDProgram);
 
-        // float radius = 10.0f;
-        // float camX = std::sinf(static_cast<float>(glfwGetTime())) * radius;
-        // float camY = (std::sinf(static_cast<float>(glfwGetTime())) + std::cosf(static_cast<float>(glfwGetTime())))  * radius;
-        // float camZ = std::cosf(static_cast<float>(glfwGetTime())) * radius;
-        // camera.setPosition(camX, camY, camZ);
-
         view = camera.getViewMatrix();
 
-        cubeMVP = projection * view * translation2;
+        cubeMVP = projection * view * translationCube;
         MVP = projection * view * translation;
-        sphereMVP = projection * view * translation3;
+        sphereMVP = projection * view * translationSphere;
 
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(MVP));
         glBindVertexArray(squareVAO);
@@ -263,7 +306,24 @@ int main() {
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
         glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(sphere.size()));
+        glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(sphere.size()));
+
+        sphereIndex = 0;
+        for (auto &sphereI : spheres) {
+            glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+            glBufferData(GL_ARRAY_BUFFER, sphereI.size() * sizeof(glm::vec3), sphereI.data(), GL_DYNAMIC_DRAW);
+
+            sphereMVP = projection * view * translations[sphereIndex];
+            glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
+            glBindVertexArray(sphereVAO);
+            if (sphereIndex == 0) glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
+            if (sphereIndex == 1) glUniform3f(uColorLoc, 0.0f, 1.0f, 0.0f);
+            if (sphereIndex == 2) glUniform3f(uColorLoc, 0.0f, 0.0f, 1.0f);
+            if (sphereIndex == 3) glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
+            if (sphereIndex == 4) glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(sphereI.size()));
+            sphereIndex++;
+        }
 
 
         glfwPollEvents();
