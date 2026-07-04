@@ -93,7 +93,7 @@ int main() {
     }
 
     glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-20.f, 0.0f, -50.0f));
-    glm::mat4 translationCube = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)); // translates to world space
+    glm::mat4 translationCube = glm::translate(glm::mat4(1.0f), glm::vec3(12.0f, 4.0f, 5.0f)); // translates to world space
     glm::mat4 translationSphere = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)); // translates to world space
     glm::mat4 translation1 = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 0.0f)); // translates to world space
     glm::mat4 translation2 = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, -10.0f, 0.0f)); // translates to world space

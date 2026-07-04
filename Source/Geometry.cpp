@@ -4,6 +4,8 @@
 
 #include "../Header/Geometry.h"
 
+#include <iostream>
+
 std::vector<glm::vec3> makeGrid(int slices) {
     std:: vector<glm::vec3> points;
     std:: vector<glm::vec3> triangles;
@@ -192,28 +194,57 @@ std::vector<glm::vec3> makeSphere(float radius) {
 
 std::vector<glm::vec3> makeGrid3D() {
     std:: vector<glm::vec3> points;
-    std:: vector<glm::vec3> vertices;
+    std:: vector<glm::vec3> lines;
 
-    int slices = 16;
+    int xWidth = 4;
+    int yWidth = 4;
+    int zWidth = 4;
+    int squaresInX = 4;
+    int squaresInY = 4;
+    int squaresInZ = 4;
 
-    for (int row = 0; row <= slices; row++) {
-        for (int col = 0; col <= slices; col++) {
-            float x = static_cast<float>(row) / static_cast<float>(slices) * W;
-            float z = static_cast<float>(col) / static_cast<float>(slices) * H;
+    int deltaX = xWidth / squaresInX;
+    int deltaY = yWidth / squaresInY;
+    int deltaZ = zWidth / squaresInZ;
 
-            points.emplace_back(x, 0, z);
+    for (int i = 0; i <= squaresInX; i++) {
+        for (int j = 0; j <= squaresInX; j++) {
+            int x = -(xWidth/2) + i*deltaX;
+            int y = -(yWidth/2) + i*deltaY;
+            int z = -(zWidth/2) + j*deltaZ;
+
+            points.emplace_back(x, y, z);
         }
     }
 
-    for (int row = 0; row < slices; row++) {
-        for (int col = 0; col < slices; col++) {
-            int row1 = col * (slices+1);
-            int row2 = (col+1) * (slices+1);
+    for (auto &point : points) {
+        std:: cout << "(" << point.x << ", " << point.y << ", " << point.z << ")" << std:: endl;
+    }
 
-            vertices.push_back(glm::uvec3(row1+row, row1+row+1, row2+row+1));
-            vertices.push_back(glm::uvec3(row1+row, row2+row+1, row2+row));
+    for (int i = 0; i < xWidth; i++) {
+        for (int j = 0; j < zWidth; j++) {
+            int bottomLeft = i * (zWidth + 1) + j;
+            int bottomRight = i * (zWidth + 1) + (j + 1);
+            int topLeft = (i + 1) * (zWidth + 1) + j;
+            int topRight = (i + 1) * (zWidth + 1) + (j + 1);
+
+            // connects points a->b
+            lines.emplace_back(points[bottomLeft]);
+            lines.emplace_back(points[topLeft]);
+
+            // connects points b->c
+            lines.emplace_back(points[topLeft]);
+            lines.emplace_back(points[topRight]);
+
+            // connects points c->d
+            lines.emplace_back(points[topRight]);
+            lines.emplace_back(points[bottomRight]);
+
+            // connects points d->a
+            lines.emplace_back(points[bottomRight]);
+            lines.emplace_back(points[bottomLeft]);
         }
     }
 
-    return vertices;
+    return lines;
 }
