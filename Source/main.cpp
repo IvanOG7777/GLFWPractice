@@ -83,6 +83,7 @@ int main() {
     std::vector<glm::vec3> cube = makeCube();
     std::vector<glm::vec3> sphere = makeSphere(5);
     std:: vector<std::vector<glm::vec3>> spheres;
+    std::vector<glm::vec3> grid3D = makeGrid3D();
 
     float radius = 1.0f;
     for (int i = 0; i < 5; i++) {
@@ -99,6 +100,7 @@ int main() {
     glm::mat4 translation3 = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 10.0f, -10.0f)); // translates to world space
     glm::mat4 translation4 = glm::translate(glm::mat4(1.0f), glm::vec3(20.0f, 0.0f, 0.0f)); // translates to world space
     glm::mat4 translation5 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 20.0f, -15.0f)); // translates to world space
+    glm::mat4 originTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
     std:: vector<glm::mat4> translations;
     translations.emplace_back(translation1);
@@ -117,6 +119,7 @@ int main() {
     glm::mat4 MVP;
     glm::mat4 cubeMVP;
     glm::mat4 sphereMVP;
+    glm::mat4 gridMVP;
 
     sceneState.camera = &camera;
 
@@ -180,7 +183,7 @@ int main() {
     glGenBuffers(1, &gridVBO);
     glBindVertexArray(gridVAO);
     glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-    glBufferData(GL_ARRAY_BUFFER, grid.size() * sizeof(glm::vec3), grid.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, grid3D.size() * sizeof(glm::vec3), grid3D.data(), GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -291,6 +294,7 @@ int main() {
         cubeMVP = projection * view * translationCube;
         MVP = projection * view * translation;
         sphereMVP = projection * view * translationSphere;
+        gridMVP = projection * view * originTranslation;
 
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(MVP));
         glBindVertexArray(squareVAO);
@@ -324,6 +328,11 @@ int main() {
             glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(sphereI.size()));
             sphereIndex++;
         }
+
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(gridMVP));
+        glBindVertexArray(gridVAO);
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(grid3D.size()));
 
 
         glfwPollEvents();

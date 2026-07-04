@@ -189,3 +189,31 @@ std::vector<glm::vec3> makeSphere(float radius) {
 
     return triangles;
 }
+
+std::vector<glm::vec3> makeGrid3D() {
+    std:: vector<glm::vec3> points;
+    std:: vector<glm::vec3> vertices;
+
+    int slices = 16;
+
+    for (int row = 0; row <= slices; row++) {
+        for (int col = 0; col <= slices; col++) {
+            float x = static_cast<float>(row) / static_cast<float>(slices) * W;
+            float z = static_cast<float>(col) / static_cast<float>(slices) * H;
+
+            points.emplace_back(x, 0, z);
+        }
+    }
+
+    for (int row = 0; row < slices; row++) {
+        for (int col = 0; col < slices; col++) {
+            int row1 = col * (slices+1);
+            int row2 = (col+1) * (slices+1);
+
+            vertices.push_back(glm::uvec3(row1+row, row1+row+1, row2+row+1));
+            vertices.push_back(glm::uvec3(row1+row, row2+row+1, row2+row));
+        }
+    }
+
+    return vertices;
+}
