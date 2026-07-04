@@ -278,15 +278,10 @@ std::vector<glm::vec3> makeGrid3D(int xWidth, int yWidth, int zWidth, int square
 }
 
 
-std::vector<glm::vec3> makeGrid2D() {
+std::vector<glm::vec3> makeGrid2DHorizontal(int xWidth, int zWidth, int squaresInX, int squaresInZ) {
 
     std:: vector<glm::vec3> points;
     std:: vector<glm::vec3> lines;
-
-    int xWidth = 4;
-    int zWidth = 4;
-    int squaresInX = 4;
-    int squaresInZ = 4;
 
     int deltaX = xWidth / squaresInX;
     int deltaZ = zWidth / squaresInZ;
@@ -308,6 +303,49 @@ std::vector<glm::vec3> makeGrid2D() {
             int bottomRight = x * (squaresInZ + 1) + z + 1;
             int topLeft = (x + 1) * (squaresInZ + 1) + z;
             int topRight = (x + 1) * (squaresInZ + 1) + z + 1;
+
+            lines.emplace_back(points[bottomLeft]);
+            lines.emplace_back(points[topLeft]);
+
+            lines.emplace_back(points[topLeft]);
+            lines.emplace_back(points[topRight]);
+
+            lines.emplace_back(points[topRight]);
+            lines.emplace_back(points[bottomRight]);
+
+            lines.emplace_back(points[bottomRight]);
+            lines.emplace_back(points[bottomLeft]);
+        }
+    }
+
+    return lines;
+}
+
+std::vector<glm::vec3> makeGrid2DVertical(int xWidth, int yWidth, int squaresInX, int squaresInY) {
+
+    std:: vector<glm::vec3> points;
+    std:: vector<glm::vec3> lines;
+
+    int deltaX = xWidth / squaresInX;
+    int deltaY = yWidth / squaresInY;
+
+    for (int x = 0; x <= squaresInX; x++) {
+        for (int y = 0; y <= squaresInY; y++) {
+            int xVal = -(xWidth / 2) + x * deltaX;
+            int yVal = -(yWidth / 2) + y * deltaY;
+
+            points.emplace_back(xVal, yVal, 0);
+        }
+    }
+
+
+    for (int x = 0; x < squaresInX; x++) {
+        for (int z = 0; z < squaresInY; z++) {
+
+            int bottomLeft = x * (squaresInY + 1) + z;
+            int bottomRight = x * (squaresInY + 1) + z + 1;
+            int topLeft = (x + 1) * (squaresInY + 1) + z;
+            int topRight = (x + 1) * (squaresInY + 1) + z + 1;
 
             lines.emplace_back(points[bottomLeft]);
             lines.emplace_back(points[topLeft]);

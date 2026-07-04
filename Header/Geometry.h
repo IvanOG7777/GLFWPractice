@@ -22,6 +22,8 @@ std:: vector<glm::vec3> makeSphere(float radius);
 
 std:: vector<glm::vec3> makeGrid3D(int xWidth, int yWidth, int zWidth, int squaresInX, int squaresInY, int squaresInZ);
 
-std:: vector<glm::vec3> makeGrid2D();
+std:: vector<glm::vec3> makeGrid2DHorizontal(int xWidth, int zWidth, int squaresInX, int squaresInZ);
+
+std::vector<glm::vec3> makeGrid2DVertical(int xWidth, int yWidth, int squaresInX, int squaresInY);
 
 #endif //GLFWPRACTICE_GEOMETRY_H

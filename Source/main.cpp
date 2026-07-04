@@ -83,8 +83,8 @@ int main() {
     std::vector<glm::vec3> cube = makeCube();
     std::vector<glm::vec3> sphere = makeSphere(5);
     std:: vector<std::vector<glm::vec3>> spheres;
-    std::vector<glm::vec3> grid3D = makeGrid2D();
-    std::vector<glm::vec3> grid2D = makeGrid2D();
+    std::vector<glm::vec3> grid3D = makeGrid2DVertical(100, 100, 10, 10);
+    // std::vector<glm::vec3> grid2D = makeGrid2D();
 
     float radius = 1.0f;
     for (int i = 0; i < 5; i++) {
