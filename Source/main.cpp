@@ -344,3 +344,5 @@ int main() {
     glfwTerminate();
     return 0;
 }
+
+//TODO make photon sphere and other sphere around black hole for particles to orbit
