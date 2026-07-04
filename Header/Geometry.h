@@ -20,6 +20,8 @@ std:: vector<glm::vec3> makeCube();
 
 std:: vector<glm::vec3> makeSphere(float radius);
 
-std:: vector<glm::vec3> makeGrid3D();
+std:: vector<glm::vec3> makeGrid3D(int xWidth, int yWidth, int zWidth, int squaresInX, int squaresInY, int squaresInZ);
+
+std:: vector<glm::vec3> makeGrid2D();
 
 #endif //GLFWPRACTICE_GEOMETRY_H

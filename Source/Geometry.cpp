@@ -192,20 +192,13 @@ std::vector<glm::vec3> makeSphere(float radius) {
     return triangles;
 }
 
-int index (int x, int y, int z, int squaresInY, int squaresInZ) {
+int getIndex (int x, int y, int z, int squaresInY, int squaresInZ) {
     return (x * (squaresInY + 1) * (squaresInZ + 1)) + (y * (squaresInZ + 1)) + z;
 }
 
-std::vector<glm::vec3> makeGrid3D() {
+std::vector<glm::vec3> makeGrid3D(int xWidth, int yWidth, int zWidth, int squaresInX, int squaresInY, int squaresInZ) {
     std:: vector<glm::vec3> points;
     std:: vector<glm::vec3> lines;
-
-    int xWidth = 4;
-    int yWidth = 4;
-    int zWidth = 4;
-    int squaresInX = 4;
-    int squaresInY = 4;
-    int squaresInZ = 4;
 
     int deltaX = xWidth / squaresInX;
     int deltaY = yWidth / squaresInY;
@@ -222,23 +215,23 @@ std::vector<glm::vec3> makeGrid3D() {
         }
     }
 
-    for (auto &point : points) {
-        std:: cout << "(" << point.x << ", " << point.y << ", " << point.z << ")" << std:: endl;
-    }
+    // for (auto &point : points) {
+    //     std:: cout << "(" << point.x << ", " << point.y << ", " << point.z << ")" << std:: endl;
+    // }
 
     for (int x = 0; x < squaresInX; x++) {
         for (int y = 0; y < squaresInY; y++) {
             for (int z = 0; z < squaresInZ; z++) {
 
-                int frontBottomLeft = index(x, y, z, squaresInY, squaresInZ);
-                int frontBottomRight = index(x + 1, y, z, squaresInY, squaresInZ);
-                int frontTopLeft = index(x, y + 1, z, squaresInY, squaresInZ);
-                int frontTopRight = index(x + 1, y + 1, z, squaresInY, squaresInZ);
+                int frontBottomLeft = getIndex(x, y, z, squaresInY, squaresInZ);
+                int frontBottomRight = getIndex(x + 1, y, z, squaresInY, squaresInZ);
+                int frontTopLeft = getIndex(x, y + 1, z, squaresInY, squaresInZ);
+                int frontTopRight = getIndex(x + 1, y + 1, z, squaresInY, squaresInZ);
 
-                int backBottomLeft = index(x, y , z + 1, squaresInY, squaresInZ);
-                int backBottomRight = index(x + 1, y, z + 1, squaresInY, squaresInZ);
-                int backTopLeft = index(x, y + 1, z + 1, squaresInY, squaresInZ);
-                int backTopRight = index(x + 1, y + 1, z + 1, squaresInY, squaresInZ);
+                int backBottomLeft = getIndex(x, y , z + 1, squaresInY, squaresInZ);
+                int backBottomRight = getIndex(x + 1, y, z + 1, squaresInY, squaresInZ);
+                int backTopLeft = getIndex(x, y + 1, z + 1, squaresInY, squaresInZ);
+                int backTopRight = getIndex(x + 1, y + 1, z + 1, squaresInY, squaresInZ);
 
                 lines.emplace_back(points[frontBottomLeft]);
                 lines.emplace_back(points[frontBottomRight]);
@@ -281,7 +274,54 @@ std::vector<glm::vec3> makeGrid3D() {
             }
         }
     }
+    return lines;
+}
 
+
+std::vector<glm::vec3> makeGrid2D() {
+
+    std:: vector<glm::vec3> points;
+    std:: vector<glm::vec3> lines;
+
+    int xWidth = 4;
+    int zWidth = 4;
+    int squaresInX = 4;
+    int squaresInZ = 4;
+
+    int deltaX = xWidth / squaresInX;
+    int deltaZ = zWidth / squaresInZ;
+
+    for (int x = 0; x <= squaresInX; x++) {
+        for (int z = 0; z <= squaresInZ; z++) {
+            int xVal = -(xWidth / 2) + x * deltaX;
+            int zVal = -(zWidth / 2) + z * deltaZ;
+
+            points.emplace_back(xVal, 0, zVal);
+        }
+    }
+
+
+    for (int x = 0; x < squaresInX; x++) {
+        for (int z = 0; z < squaresInZ; z++) {
+
+            int bottomLeft = x * (squaresInZ + 1) + z;
+            int bottomRight = x * (squaresInZ + 1) + z + 1;
+            int topLeft = (x + 1) * (squaresInZ + 1) + z;
+            int topRight = (x + 1) * (squaresInZ + 1) + z + 1;
+
+            lines.emplace_back(points[bottomLeft]);
+            lines.emplace_back(points[topLeft]);
+
+            lines.emplace_back(points[topLeft]);
+            lines.emplace_back(points[topRight]);
+
+            lines.emplace_back(points[topRight]);
+            lines.emplace_back(points[bottomRight]);
+
+            lines.emplace_back(points[bottomRight]);
+            lines.emplace_back(points[bottomLeft]);
+        }
+    }
 
     return lines;
 }
