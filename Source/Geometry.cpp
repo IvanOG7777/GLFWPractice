@@ -207,13 +207,14 @@ std::vector<glm::vec3> makeGrid3D() {
     int deltaY = yWidth / squaresInY;
     int deltaZ = zWidth / squaresInZ;
 
-    for (int i = 0; i <= squaresInX; i++) {
-        for (int j = 0; j <= squaresInX; j++) {
-            int x = -(xWidth/2) + i*deltaX;
-            int y = -(yWidth/2) + i*deltaY;
-            int z = -(zWidth/2) + j*deltaZ;
-
-            points.emplace_back(x, y, z);
+    for (int x = 0; x <= squaresInX; x++) {
+        for (int y = 0; y <= squaresInY; y++) {
+            for (int z = 0; z < squaresInZ; z++) {
+                int xVal = -(xWidth/2) + x*deltaX;
+                int yVal = -(yWidth/2) + y*deltaY;
+                int zVal = -(zWidth/2) + z*deltaZ;
+                points.emplace_back(xVal, yVal, zVal);
+            }
         }
     }
 
