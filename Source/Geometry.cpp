@@ -192,6 +192,10 @@ std::vector<glm::vec3> makeSphere(float radius) {
     return triangles;
 }
 
+int index (int x, int y, int z, int squaresInY, int squaresInZ) {
+    return (x * (squaresInY + 1) * (squaresInZ + 1)) + (y * (squaresInZ + 1)) + z;
+}
+
 std::vector<glm::vec3> makeGrid3D() {
     std:: vector<glm::vec3> points;
     std:: vector<glm::vec3> lines;
@@ -209,7 +213,7 @@ std::vector<glm::vec3> makeGrid3D() {
 
     for (int x = 0; x <= squaresInX; x++) {
         for (int y = 0; y <= squaresInY; y++) {
-            for (int z = 0; z < squaresInZ; z++) {
+            for (int z = 0; z <= squaresInZ; z++) {
                 int xVal = -(xWidth/2) + x*deltaX;
                 int yVal = -(yWidth/2) + y*deltaY;
                 int zVal = -(zWidth/2) + z*deltaZ;
@@ -222,30 +226,62 @@ std::vector<glm::vec3> makeGrid3D() {
         std:: cout << "(" << point.x << ", " << point.y << ", " << point.z << ")" << std:: endl;
     }
 
-    for (int i = 0; i < xWidth; i++) {
-        for (int j = 0; j < zWidth; j++) {
-            int bottomLeft = i * (zWidth + 1) + j;
-            int bottomRight = i * (zWidth + 1) + (j + 1);
-            int topLeft = (i + 1) * (zWidth + 1) + j;
-            int topRight = (i + 1) * (zWidth + 1) + (j + 1);
+    for (int x = 0; x < squaresInX; x++) {
+        for (int y = 0; y < squaresInY; y++) {
+            for (int z = 0; z < squaresInZ; z++) {
 
-            // connects points a->b
-            lines.emplace_back(points[bottomLeft]);
-            lines.emplace_back(points[topLeft]);
+                int frontBottomLeft = index(x, y, z, squaresInY, squaresInZ);
+                int frontBottomRight = index(x + 1, y, z, squaresInY, squaresInZ);
+                int frontTopLeft = index(x, y + 1, z, squaresInY, squaresInZ);
+                int frontTopRight = index(x + 1, y + 1, z, squaresInY, squaresInZ);
 
-            // connects points b->c
-            lines.emplace_back(points[topLeft]);
-            lines.emplace_back(points[topRight]);
+                int backBottomLeft = index(x, y , z + 1, squaresInY, squaresInZ);
+                int backBottomRight = index(x + 1, y, z + 1, squaresInY, squaresInZ);
+                int backTopLeft = index(x, y + 1, z + 1, squaresInY, squaresInZ);
+                int backTopRight = index(x + 1, y + 1, z + 1, squaresInY, squaresInZ);
 
-            // connects points c->d
-            lines.emplace_back(points[topRight]);
-            lines.emplace_back(points[bottomRight]);
+                lines.emplace_back(points[frontBottomLeft]);
+                lines.emplace_back(points[frontBottomRight]);
 
-            // connects points d->a
-            lines.emplace_back(points[bottomRight]);
-            lines.emplace_back(points[bottomLeft]);
+                lines.emplace_back(points[frontBottomRight]);
+                lines.emplace_back(points[frontTopRight]);
+
+                lines.emplace_back(points[frontTopRight]);
+                lines.emplace_back(points[frontTopLeft]);
+
+                lines.emplace_back(points[frontTopLeft]);
+                lines.emplace_back(points[frontBottomLeft]);
+
+
+                lines.emplace_back(points[backBottomLeft]);
+                lines.emplace_back(points[backBottomRight]);
+
+                lines.emplace_back(points[backBottomRight]);
+                lines.emplace_back(points[backTopRight]);
+
+                lines.emplace_back(points[backTopRight]);
+                lines.emplace_back(points[backTopLeft]);
+
+                lines.emplace_back(points[backTopLeft]);
+                lines.emplace_back(points[backBottomLeft]);
+
+
+                lines.emplace_back(points[frontBottomLeft]);
+                lines.emplace_back(points[backBottomLeft]);
+
+                lines.emplace_back(points[frontBottomRight]);
+                lines.emplace_back(points[backBottomRight]);
+
+                lines.emplace_back(points[frontTopLeft]);
+                lines.emplace_back(points[backTopLeft]);
+
+                lines.emplace_back(points[frontTopRight]);
+                lines.emplace_back(points[backTopRight]);
+
+            }
         }
     }
+
 
     return lines;
 }
