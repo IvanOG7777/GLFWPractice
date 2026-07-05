@@ -81,13 +81,13 @@ int main() {
     std::vector<glm::vec3> grid = makeGrid(4);
     std::vector<glm::vec3> square = makeSquare(); // creates square in its own local space
     std::vector<glm::vec3> cube = makeCube();
-    std::vector<glm::vec3> sphere = makeSphere(5);
+    std::vector<glm::vec3> sphere = makeSphere(10.0f);
     std:: vector<std::vector<glm::vec3>> spheres;
     std::vector<glm::vec3> grid3D = makeGrid2DVertical(100, 100, 10, 10);
     // std::vector<glm::vec3> grid2D = makeGrid2D();
 
     float radius = 1.0f;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 1; i++) {
         auto sphereL = makeSphere(radius * 1.5f);
         radius *= 1.5f;
         spheres.emplace_back(sphereL);
@@ -103,12 +103,12 @@ int main() {
     glm::mat4 translation5 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 20.0f, -15.0f)); // translates to world space
     glm::mat4 originTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
-    std:: vector<glm::mat4> translations;
-    translations.emplace_back(translation1);
-    translations.emplace_back(translation2);
-    translations.emplace_back(translation3);
-    translations.emplace_back(translation4);
-    translations.emplace_back(translation5);
+    // std:: vector<glm::mat4> translations;
+    // translations.emplace_back(translation1);
+    // translations.emplace_back(translation2);
+    // translations.emplace_back(translation3);
+    // translations.emplace_back(translation4);
+    // translations.emplace_back(translation5);
     int sphereIndex = 0;
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
@@ -121,8 +121,14 @@ int main() {
     glm::mat4 cubeMVP;
     glm::mat4 sphereMVP;
     glm::mat4 gridMVP;
+    glm::vec3 currentPosition = {10.0f, 10.0f, 0.0f};
+    glm::vec3 acceleration = {5.0f, 5.0f, 5.0f};
+    glm::vec3 velocity = {20.0f, 5.0f, 2.0f};
 
     sceneState.camera = &camera;
+
+    glm::vec3 sphereCenter = glm::vec3(0.0f, 0.0f, -10.0f);
+    radius = 20.0f;
 
 
 
@@ -297,6 +303,18 @@ int main() {
         sphereMVP = projection * view * translationSphere;
         gridMVP = projection * view * originTranslation;
 
+        velocity += acceleration;
+
+        velocity *= deltaTime * 0.1;
+
+        currentPosition += velocity;
+
+        auto x = sphereCenter.x + (radius * std:: cosf(currentPosition.x));
+        auto y = (sphereCenter.x + (radius * std:: cosf(currentPosition.x))) + (sphereCenter.z + (radius * std:: sinf(currentPosition.z)));
+        auto z = sphereCenter.z + (radius * std:: sinf(currentPosition.z));
+
+        glm::vec3 pt = {x, y, z};
+
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(MVP));
         glBindVertexArray(squareVAO);
         glUniform3f(uColorLoc, 0.0f, 1.0f, 1.0f);
@@ -308,9 +326,11 @@ int main() {
         glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cube.size()));
 
+        glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+        glBufferData(GL_ARRAY_BUFFER, sphere.size() * sizeof(glm::vec3), sphere.data(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
-        glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
+        glUniform3f(uColorLoc, 1.0f, 0.2f, 0.4f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(sphere.size()));
 
         sphereIndex = 0;
@@ -318,7 +338,7 @@ int main() {
             glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
             glBufferData(GL_ARRAY_BUFFER, sphereI.size() * sizeof(glm::vec3), sphereI.data(), GL_DYNAMIC_DRAW);
 
-            sphereMVP = projection * view * translations[sphereIndex];
+            sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), pt);
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
             glBindVertexArray(sphereVAO);
             if (sphereIndex == 0) glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);

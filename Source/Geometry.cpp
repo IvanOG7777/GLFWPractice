@@ -215,10 +215,6 @@ std::vector<glm::vec3> makeGrid3D(int xWidth, int yWidth, int zWidth, int square
         }
     }
 
-    // for (auto &point : points) {
-    //     std:: cout << "(" << point.x << ", " << point.y << ", " << point.z << ")" << std:: endl;
-    // }
-
     for (int x = 0; x < squaresInX; x++) {
         for (int y = 0; y < squaresInY; y++) {
             for (int z = 0; z < squaresInZ; z++) {
