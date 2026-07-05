@@ -137,7 +137,7 @@ int main() {
     radius = 20.0f;
 
     std:: vector<ParticleTrail> trailPositions;
-    trailPositions.reserve(500);
+    trailPositions.reserve(1500);
 
 
 
@@ -321,7 +321,7 @@ int main() {
         MVP = projection * view * translation;
         sphereMVP = projection * view * translationSphere;
         gridMVP = projection * view * originTranslation;
-        trailMVP = projection * view * translationSphere;
+        trailMVP = projection * view * glm::mat4(1.0f);
 
         velocity += acceleration;
         velocity *= deltaTime * 0.1;
@@ -337,7 +337,7 @@ int main() {
         currentTrailPosition.positon = pt;
 
 
-        if (trailPositions.size() >= 500) {
+        if (trailPositions.size() >= 1500) {
             trailPositions.erase(trailPositions.begin());
             trailPositions.emplace_back(currentTrailPosition);
         }
@@ -384,7 +384,7 @@ int main() {
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
             glBindVertexArray(trailVAO);
             glUniform3f(uColorLoc, currentTrailPosition.color.x, currentTrailPosition.color.y, currentTrailPosition.color.z);
-            glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(trailPositions.size()));
+            glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(trailPositions.size()));
 
             sphereIndex++;
         }
