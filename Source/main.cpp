@@ -86,7 +86,7 @@ int main() {
     std::vector<glm::vec3> grid = makeGrid(4);
     std::vector<glm::vec3> square = makeSquare(); // creates square in its own local space
     std::vector<glm::vec3> cube = makeCube();
-    std::vector<glm::vec3> sphere = makeSphere(10.0f);
+    std::vector<glm::vec3> sphere = makeSphere(1.0f);
     std:: vector<std::vector<glm::vec3>> spheres;
     std::vector<glm::vec3> grid3D = makeGrid2DVertical(100, 100, 10, 10);
     // std::vector<glm::vec3> grid2D = makeGrid2D();
@@ -137,7 +137,7 @@ int main() {
     radius = 20.0f;
 
     std:: vector<ParticleTrail> trailPositions;
-    trailPositions.reserve(1500);
+    trailPositions.reserve(1000);
 
 
 
@@ -337,7 +337,7 @@ int main() {
         currentTrailPosition.positon = pt;
 
 
-        if (trailPositions.size() >= 1500) {
+        if (trailPositions.size() >= 1000) {
             trailPositions.erase(trailPositions.begin());
             trailPositions.emplace_back(currentTrailPosition);
         }
@@ -383,8 +383,8 @@ int main() {
 
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
             glBindVertexArray(trailVAO);
-            glUniform3f(uColorLoc, currentTrailPosition.color.x, currentTrailPosition.color.y, currentTrailPosition.color.z);
-            glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(trailPositions.size()));
+            glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
+            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(trailPositions.size()));
 
             sphereIndex++;
         }
