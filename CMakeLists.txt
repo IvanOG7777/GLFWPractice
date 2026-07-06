@@ -15,6 +15,8 @@ add_executable(GLWFPractice
         Header/Constants.h
         Header/Camera.h
         Source/Camera.cpp
+        Header/Sphere.h
+        Source/Sphere.cpp
 )
 
 target_include_directories(GLWFPractice PRIVATE

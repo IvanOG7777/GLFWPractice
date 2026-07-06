@@ -15,6 +15,7 @@
 #include "../Header/GLUtils.h"
 #include "../Header/Geometry.h"
 #include "../Header/Constants.h"
+#include "../Header/Sphere.h"
 
 
 const char* vertexShader = R"GLSL(
@@ -63,11 +64,6 @@ float toRadians(float angleDegrees) {
 }
 
 
-struct ParticleTrail {
-    glm::vec3 positon;
-    glm::vec3 color = {1.0f, 1.0f, 1.0f};
-};
-
 int main() {
     if (!glfwInit()) {
         std::cerr << "GLFW INIT ERROR \n";
@@ -86,28 +82,24 @@ int main() {
     std::vector<glm::vec3> sphere = makeSphere(1.0f);
     std:: vector<std::vector<glm::vec3>> spheres;
 
+    std:: vector<SphereParticle> sphere_particles;
+    sphere_particles.resize(5);
+
     float radius = 1.0f;
+    for (int i = 0; i < 5; i++) {
+        auto mesh = makeSphere(radius * 1.5f);
+        sphere_particles[i].setMesh(mesh);
+        sphere_particles[i].
+    }
+
     for (int i = 0; i < 5; i++) {
         auto sphereL = makeSphere(radius * 1.5f);
         radius *= 1.5f;
         spheres.emplace_back(sphereL);
     }
-
-    glm::mat4 translationCube = glm::translate(glm::mat4(1.0f), glm::vec3(12.0f, 4.0f, 5.0f)); // translates to world space
     glm::mat4 translationSphere = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)); // translates to world space
-    glm::mat4 translation1 = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 0.0f)); // translates to world space
-    glm::mat4 translation2 = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, -10.0f, 0.0f)); // translates to world space
-    glm::mat4 translation3 = glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 10.0f, -10.0f)); // translates to world space
-    glm::mat4 translation4 = glm::translate(glm::mat4(1.0f), glm::vec3(20.0f, 0.0f, 0.0f)); // translates to world space
-    glm::mat4 translation5 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 20.0f, -15.0f)); // translates to world space
-    glm::mat4 originTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
-    std:: vector<glm::mat4> translations;
-    translations.emplace_back(translation1);
-    translations.emplace_back(translation2);
-    translations.emplace_back(translation3);
-    translations.emplace_back(translation4);
-    translations.emplace_back(translation5);
+
     int sphereIndex = 0;
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
@@ -116,10 +108,7 @@ int main() {
 
     glm::mat4 lookAtMatrix = glm::lookAt(camera.getPosition(), {0.0f,0.0f,0.0f}, {0.0f, 1.0f, 0.0f});
 
-    glm::mat4 MVP;
-    glm::mat4 cubeMVP;
     glm::mat4 sphereMVP;
-    glm::mat4 gridMVP;
     glm::mat4 trailMVP;
     glm::vec3 acceleration = {5.0f, 5.0f, 5.0f};
     glm::vec3 velocity = {20.0f, 5.0f, 2.0f};
@@ -287,9 +276,7 @@ int main() {
 
         view = camera.getViewMatrix();
 
-        cubeMVP = projection * view * translationCube;
         sphereMVP = projection * view * translationSphere;
-        gridMVP = projection * view * originTranslation;
         trailMVP = projection * view * glm::mat4(1.0f);
 
         velocity += acceleration;
@@ -301,7 +288,7 @@ int main() {
             currentPosition += velocity;
 
             auto x = sphereCenter.x + (radius * std:: cosf(currentPosition.x));
-            auto y = (sphereCenter.x + (radius * std:: cosf(currentPosition.x))) + (sphereCenter.z + (radius * std:: sinf(currentPosition.z)));
+            auto y = (radius * std:: cosf(currentPosition.x)) + (sphereCenter.z + (radius * std:: sinf(currentPosition.z)));
             auto z = sphereCenter.z + (radius * std:: sinf(currentPosition.z));
 
             glm::vec3 pt = {x, y, z};
