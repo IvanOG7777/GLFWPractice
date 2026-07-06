@@ -92,7 +92,7 @@ int main() {
     // std::vector<glm::vec3> grid2D = makeGrid2D();
 
     float radius = 1.0f;
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 5; i++) {
         auto sphereL = makeSphere(radius * 1.5f);
         radius *= 1.5f;
         spheres.emplace_back(sphereL);
@@ -108,12 +108,12 @@ int main() {
     glm::mat4 translation5 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 20.0f, -15.0f)); // translates to world space
     glm::mat4 originTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
-    // std:: vector<glm::mat4> translations;
-    // translations.emplace_back(translation1);
-    // translations.emplace_back(translation2);
-    // translations.emplace_back(translation3);
-    // translations.emplace_back(translation4);
-    // translations.emplace_back(translation5);
+    std:: vector<glm::mat4> translations;
+    translations.emplace_back(translation1);
+    translations.emplace_back(translation2);
+    translations.emplace_back(translation3);
+    translations.emplace_back(translation4);
+    translations.emplace_back(translation5);
     int sphereIndex = 0;
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
@@ -127,7 +127,6 @@ int main() {
     glm::mat4 sphereMVP;
     glm::mat4 gridMVP;
     glm::mat4 trailMVP;
-    glm::vec3 currentPosition = {10.0f, 10.0f, 0.0f};
     glm::vec3 acceleration = {5.0f, 5.0f, 5.0f};
     glm::vec3 velocity = {20.0f, 5.0f, 2.0f};
 
@@ -136,9 +135,19 @@ int main() {
     glm::vec3 sphereCenter = glm::vec3(0.0f, 0.0f, -10.0f);
     radius = 20.0f;
 
-    std:: vector<ParticleTrail> trailPositions;
-    trailPositions.reserve(1000);
+    std:: vector<std::vector<ParticleTrail>> trailPositions;
+    trailPositions.resize(5);
+    for (auto &trail : trailPositions) {
+        trail.reserve(1000);
+    }
 
+    std:: vector<glm::vec3> sphereOrigins;
+    //"translations"
+    sphereOrigins.emplace_back(10.0f, 10.0f, 0.0f);
+    sphereOrigins.emplace_back(-10.0f, -10.0f, 0.0f);
+    sphereOrigins.emplace_back(-10.0f, 10.0f, -10.0f);
+    sphereOrigins.emplace_back(20.0f, 0.0f, 0.0f);
+    sphereOrigins.emplace_back(0.0f, 20.0f, -15.0f);
 
 
     GLFWwindow *window = createWindow();
@@ -189,10 +198,7 @@ int main() {
     glDeleteShader(threeDvs);
     glDeleteShader(threeDfs);
 
-    GLuint uResolutionLoc = glGetUniformLocation(shaderProgram, "uResolution");
     GLuint uColorLoc = glGetUniformLocation(threeDProgram, "uColor");
-    GLuint uOffsetLoc = glGetUniformLocation(shaderProgram, "uOffset");
-    GLuint uScaleLoc = glGetUniformLocation(shaderProgram, "uScale");
     GLuint uMVP = glGetUniformLocation(threeDProgram, "uMVP");
 
     glGenVertexArrays(1, &gridVAO);
@@ -200,16 +206,6 @@ int main() {
     glBindVertexArray(gridVAO);
     glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
     glBufferData(GL_ARRAY_BUFFER, grid3D.size() * sizeof(glm::vec3), grid3D.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    glGenVertexArrays(1, &squareVAO);
-    glGenBuffers(1, &squareVBO);
-    glBindVertexArray(squareVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, squareVBO);
-    glBufferData(GL_ARRAY_BUFFER, square.size() * sizeof(glm::vec3), square.data(), GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -318,37 +314,34 @@ int main() {
         view = camera.getViewMatrix();
 
         cubeMVP = projection * view * translationCube;
-        MVP = projection * view * translation;
         sphereMVP = projection * view * translationSphere;
         gridMVP = projection * view * originTranslation;
         trailMVP = projection * view * glm::mat4(1.0f);
 
         velocity += acceleration;
         velocity *= deltaTime * 0.1;
-        currentPosition += velocity;
 
-        auto x = sphereCenter.x + (radius * std:: cosf(currentPosition.x));
-        auto y = (sphereCenter.x + (radius * std:: cosf(currentPosition.x))) + (sphereCenter.z + (radius * std:: sinf(currentPosition.z)));
-        auto z = sphereCenter.z + (radius * std:: sinf(currentPosition.z));
+        sphereIndex = 0;
+        for (auto &currentPosition : sphereOrigins) {
 
-        glm::vec3 pt = {x, y, z};
+            currentPosition += velocity;
 
-        ParticleTrail currentTrailPosition;
-        currentTrailPosition.positon = pt;
+            auto x = sphereCenter.x + (radius * std:: cosf(currentPosition.x));
+            auto y = (sphereCenter.x + (radius * std:: cosf(currentPosition.x))) + (sphereCenter.z + (radius * std:: sinf(currentPosition.z)));
+            auto z = sphereCenter.z + (radius * std:: sinf(currentPosition.z));
 
+            glm::vec3 pt = {x, y, z};
 
-        if (trailPositions.size() >= 1000) {
-            trailPositions.erase(trailPositions.begin());
-            trailPositions.emplace_back(currentTrailPosition);
+            ParticleTrail currentTrailPosition;
+            currentTrailPosition.positon = pt;
+
+            if (trailPositions[sphereIndex].size() >= 1000) {
+                trailPositions[sphereIndex].erase(trailPositions[sphereIndex].begin());
+                trailPositions[sphereIndex].emplace_back(currentTrailPosition);
+            }
+            trailPositions[sphereIndex].emplace_back(currentTrailPosition);
+            sphereIndex++;
         }
-
-        trailPositions.emplace_back(currentTrailPosition);
-
-        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(MVP));
-        glBindVertexArray(squareVAO);
-        glUniform3f(uColorLoc, 0.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(square.size()));
-
 
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(cubeMVP));
         glBindVertexArray(cubeVAO);
@@ -368,9 +361,15 @@ int main() {
             glBufferData(GL_ARRAY_BUFFER, sphereI.size() * sizeof(glm::vec3), sphereI.data(), GL_DYNAMIC_DRAW);
 
             glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-            glBufferData(GL_ARRAY_BUFFER, trailPositions.size() * sizeof(ParticleTrail), trailPositions.data(), GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, trailPositions[sphereIndex].size() * sizeof(ParticleTrail), trailPositions[sphereIndex].data(), GL_DYNAMIC_DRAW);
 
-            sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), pt);
+
+            if (trailPositions[sphereIndex].empty()) {
+                sphereIndex++;
+                continue;
+            }
+
+            sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), trailPositions[sphereIndex].back().positon);
 
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
             glBindVertexArray(sphereVAO);
@@ -384,7 +383,7 @@ int main() {
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
             glBindVertexArray(trailVAO);
             glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
-            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(trailPositions.size()));
+            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(trailPositions[sphereIndex].size()));
 
             sphereIndex++;
         }
