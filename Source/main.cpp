@@ -83,13 +83,8 @@ int main() {
 
     camera.setPosition(0, 1.5f, 10);
 
-    std::vector<glm::vec3> grid = makeGrid(4);
-    std::vector<glm::vec3> square = makeSquare(); // creates square in its own local space
-    std::vector<glm::vec3> cube = makeCube();
     std::vector<glm::vec3> sphere = makeSphere(1.0f);
     std:: vector<std::vector<glm::vec3>> spheres;
-    std::vector<glm::vec3> grid3D = makeGrid2DVertical(100, 100, 10, 10);
-    // std::vector<glm::vec3> grid2D = makeGrid2D();
 
     float radius = 1.0f;
     for (int i = 0; i < 5; i++) {
@@ -98,7 +93,6 @@ int main() {
         spheres.emplace_back(sphereL);
     }
 
-    glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-20.f, 0.0f, -50.0f));
     glm::mat4 translationCube = glm::translate(glm::mat4(1.0f), glm::vec3(12.0f, 4.0f, 5.0f)); // translates to world space
     glm::mat4 translationSphere = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)); // translates to world space
     glm::mat4 translation1 = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 10.0f, 0.0f)); // translates to world space
@@ -133,7 +127,7 @@ int main() {
     sceneState.camera = &camera;
 
     glm::vec3 sphereCenter = glm::vec3(0.0f, 0.0f, -10.0f);
-    radius = 20.0f;
+    radius = 50.0f;
 
     std:: vector<std::vector<ParticleTrail>> trailPositions;
     trailPositions.resize(5);
@@ -143,10 +137,10 @@ int main() {
 
     std:: vector<glm::vec3> sphereOrigins;
     //"translations"
-    sphereOrigins.emplace_back(10.0f, 10.0f, 0.0f);
-    sphereOrigins.emplace_back(-10.0f, -10.0f, 0.0f);
-    sphereOrigins.emplace_back(-10.0f, 10.0f, -10.0f);
-    sphereOrigins.emplace_back(20.0f, 0.0f, 0.0f);
+    sphereOrigins.emplace_back(10.0f, 40.0f, 55.0f);
+    sphereOrigins.emplace_back(-15.0f, -12.0f, -23.0f);
+    sphereOrigins.emplace_back(-20.0f, 5.0f, -10.0f);
+    sphereOrigins.emplace_back(20.0f, 0.0f, 40.0f);
     sphereOrigins.emplace_back(0.0f, 20.0f, -15.0f);
 
 
@@ -163,8 +157,8 @@ int main() {
     glfwSetCursorPosCallback(window, cursorPositionCallback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    GLuint gridVAO = 0, squareVAO = 0, cubeVAO = 0, sphereVAO = 0, trailVAO = 0;
-    GLuint gridVBO = 0, squareVBO = 0, cubeVBO = 0, sphereVBO = 0, trailVBO = 0;
+    GLuint sphereVAO = 0, trailVAO = 0;
+    GLuint sphereVBO = 0, trailVBO = 0;
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertexShader, nullptr);
@@ -200,26 +194,6 @@ int main() {
 
     GLuint uColorLoc = glGetUniformLocation(threeDProgram, "uColor");
     GLuint uMVP = glGetUniformLocation(threeDProgram, "uMVP");
-
-    glGenVertexArrays(1, &gridVAO);
-    glGenBuffers(1, &gridVBO);
-    glBindVertexArray(gridVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-    glBufferData(GL_ARRAY_BUFFER, grid3D.size() * sizeof(glm::vec3), grid3D.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    glGenVertexArrays(1, &cubeVAO);
-    glGenBuffers(1, &cubeVBO);
-    glBindVertexArray(cubeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    glBufferData(GL_ARRAY_BUFFER, cube.size() * sizeof(glm::vec3), cube.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 
     glGenVertexArrays(1, &sphereVAO);
     glGenBuffers(1, &sphereVBO);
@@ -343,11 +317,6 @@ int main() {
             sphereIndex++;
         }
 
-        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(cubeMVP));
-        glBindVertexArray(cubeVAO);
-        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(cube.size()));
-
         glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
         glBufferData(GL_ARRAY_BUFFER, sphere.size() * sizeof(glm::vec3), sphere.data(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
@@ -387,12 +356,6 @@ int main() {
 
             sphereIndex++;
         }
-
-        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(gridMVP));
-        glBindVertexArray(gridVAO);
-        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(grid3D.size()));
-
 
         glfwPollEvents();
         glfwSwapBuffers(window);
