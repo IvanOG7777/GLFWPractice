@@ -5,10 +5,7 @@
 #ifndef GLFWPRACTICE_SPHERE_H
 #define GLFWPRACTICE_SPHERE_H
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <glm/glm/glm.hpp>
-#include <glm/glm/gtc/matrix_transform.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
 
 #include "Geometry.h"
@@ -24,6 +21,7 @@ private:
     std::vector<glm::vec3> mesh;
     glm::vec3 position;
     std::vector<ParticleTrail> trailPositions;
+    glm::vec3 phase;
 
 public:
 
@@ -47,6 +45,10 @@ public:
     size_t getMeshSize();
 
     glm::vec3 *getMeshData();
+
+    glm::vec3 &getPhase();
+    void setPhase(glm::vec3 &passedPhase);
+    void setPhase(float passedX, float passedY, float passedZ);
 };
 
 

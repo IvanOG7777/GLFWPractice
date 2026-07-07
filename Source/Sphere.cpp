@@ -8,6 +8,7 @@ SphereParticle::SphereParticle() {
     mesh = {};
     position = {0, 0, 0};
     trailPositions.reserve(1000);
+    phase = {0.0f, 0.0f, 0.0f};
 }
 
 void SphereParticle::setPosition(float passedX, float passedY, float passedZ) {
@@ -65,4 +66,18 @@ size_t SphereParticle::getMeshSize() {
 
 glm::vec3 *SphereParticle::getMeshData() {
     return mesh.data();
+}
+
+glm::vec3 &SphereParticle::getPhase() {
+    return phase;
+}
+
+void SphereParticle::setPhase(glm::vec3 &passedPhase) {
+    phase = passedPhase;
+}
+
+void SphereParticle::setPhase(float passedX, float passedY, float passedZ) {
+    phase.x = passedX;
+    phase.y = passedY;
+    phase.z = passedZ;
 }

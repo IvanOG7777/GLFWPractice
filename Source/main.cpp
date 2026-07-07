@@ -94,19 +94,16 @@ int main() {
     float radius = 1.0f;
     for (int i = 0; i < 5; i++) {
 
-        int min = 10;
-        int max = 50;
-
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> distrib(min, max);
-
-        int randVal = distrib(gen);
+        int x = rand() % 50;
+        int y = rand() % 100;
+        int z = rand() % 150;
 
         auto mesh = makeSphere(radius * 1.5f);
+        radius *= 1.5f;
         sphere_particles[i].setMesh(mesh);
-        sphere_particles[i].setPosition(static_cast<float>(randVal), static_cast<float>(randVal - 5), static_cast<float>(randVal + 20));
+        sphere_particles[i].setPosition(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
         sphere_particles[i].setTrailPosition(sphere_particles[i].getPosition());
+        sphere_particles[i].setPhase(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
     }
 
     glm::mat4 translationSphere = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)); // translates to world space
@@ -290,13 +287,14 @@ int main() {
         sphereIndex = 0;
         for (auto &sphereI : sphere_particles) {
 
-            auto currentPosition = sphereI.getPosition();
+            auto phase = sphereI.getPhase();
 
-            currentPosition += velocity;
+            phase += velocity;
+            sphereI.setPhase(phase);
 
-            auto x = sphereCenter.x + (radius * std:: cosf(currentPosition.x));
-            auto y = (radius * std:: cosf(currentPosition.x)) + (sphereCenter.z + (radius * std:: sinf(currentPosition.z)));
-            auto z = sphereCenter.z + (radius * std:: sinf(currentPosition.z));
+            auto x = sphereCenter.x + (radius * std:: cosf(phase.x));
+            auto y = (radius * std:: cosf(phase.x)) + (sphereCenter.z + (radius * std:: sinf(phase.z)));
+            auto z = sphereCenter.z + (radius * std:: sinf(phase.z));
 
             glm::vec3 pt = {x, y, z};
 
@@ -306,11 +304,7 @@ int main() {
             currentTrailPosition.positon = pt;
 
             sphereI.setTrailPosition(currentTrailPosition);
-            sphereIndex++;
-        }
 
-        sphereIndex = 0;
-        for (auto &sphereI : sphere_particles) {
             // rebinds the sphere and trail VBOS
             glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
             glBufferData(GL_ARRAY_BUFFER, sphereI.getMeshSize() * sizeof(glm::vec3), sphereI.getMeshData(), GL_DYNAMIC_DRAW);
@@ -318,9 +312,8 @@ int main() {
             glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
             glBufferData(GL_ARRAY_BUFFER, sphereI.getTrailSize() * sizeof(ParticleTrail), sphereI.getTrailData(), GL_DYNAMIC_DRAW);
 
-            sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), sphereI.getPosition());
-
             // paints the spheres
+            sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), sphereI.getPosition());
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
             glBindVertexArray(sphereVAO);
             if (sphereIndex == 0) glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
