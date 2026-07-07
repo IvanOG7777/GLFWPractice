@@ -10,7 +10,7 @@ SphereParticle::SphereParticle() {
     trailPositions.reserve(1000);
 }
 
-void SphereParticle::setPosition(float &passedX, float &passedY, float &passedZ) {
+void SphereParticle::setPosition(float passedX, float passedY, float passedZ) {
     position.x = passedX;
     position.y = passedY;
     position.z = passedZ;
@@ -37,6 +37,32 @@ void SphereParticle::setTrailPosition(ParticleTrail &trail) {
     trailPositions.emplace_back(trail);
 }
 
+void SphereParticle::setTrailPosition(glm::vec3 position) {
+    if (trailPositions.size() >= 1000) {
+        trailPositions.erase(trailPositions.begin());
+        trailPositions.emplace_back(position);
+    }
+
+    trailPositions.emplace_back(position);
+}
+
 std::vector<ParticleTrail> SphereParticle::getTrailPosition() {
     return trailPositions;
+}
+
+size_t SphereParticle::getTrailSize() {
+    return trailPositions.size();
+}
+
+ParticleTrail *SphereParticle::getTrailData() {
+    return trailPositions.data();
+}
+
+
+size_t SphereParticle::getMeshSize() {
+    return mesh.size();
+}
+
+glm::vec3 *SphereParticle::getMeshData() {
+    return mesh.data();
 }

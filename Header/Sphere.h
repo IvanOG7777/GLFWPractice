@@ -29,7 +29,7 @@ public:
 
     SphereParticle();
 
-    void setPosition(float &passedX, float &passedY, float &passedZ);
+    void setPosition(float passedX, float passedY, float passedZ);
     void setPosition(glm::vec3 &passedPosition);
 
     glm::vec3 getPosition();
@@ -37,7 +37,16 @@ public:
     void setMesh(std::vector<glm::vec3> &passedMesh);
 
     void setTrailPosition(ParticleTrail &trail);
+    void setTrailPosition(glm::vec3 position);
     std:: vector<ParticleTrail> getTrailPosition();
+
+    size_t getTrailSize();
+
+    ParticleTrail *getTrailData();
+
+    size_t getMeshSize();
+
+    glm::vec3 *getMeshData();
 };
 
 

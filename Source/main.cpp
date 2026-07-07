@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <random>
 #include <vector>
 
 #include <glad/glad.h>
@@ -79,7 +80,12 @@ int main() {
 
     camera.setPosition(0, 1.5f, 10);
 
-    std::vector<glm::vec3> sphere = makeSphere(1.0f);
+    SphereParticle blackhole;
+    std::vector<glm::vec3> sphere = makeSphere(1.0f); //
+    blackhole.setMesh(sphere);
+    blackhole.setPosition(0.0f, 0.0f, 0.0f);
+    blackhole.setTrailPosition(blackhole.getPosition());
+
     std:: vector<std::vector<glm::vec3>> spheres;
 
     std:: vector<SphereParticle> sphere_particles;
@@ -87,16 +93,22 @@ int main() {
 
     float radius = 1.0f;
     for (int i = 0; i < 5; i++) {
+
+        int min = 10;
+        int max = 50;
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distrib(min, max);
+
+        int randVal = distrib(gen);
+
         auto mesh = makeSphere(radius * 1.5f);
         sphere_particles[i].setMesh(mesh);
-        sphere_particles[i].
+        sphere_particles[i].setPosition(static_cast<float>(randVal), static_cast<float>(randVal - 5), static_cast<float>(randVal + 20));
+        sphere_particles[i].setTrailPosition(sphere_particles[i].getPosition());
     }
 
-    for (int i = 0; i < 5; i++) {
-        auto sphereL = makeSphere(radius * 1.5f);
-        radius *= 1.5f;
-        spheres.emplace_back(sphereL);
-    }
     glm::mat4 translationSphere = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)); // translates to world space
 
 
@@ -115,22 +127,8 @@ int main() {
 
     sceneState.camera = &camera;
 
-    glm::vec3 sphereCenter = glm::vec3(0.0f, 0.0f, -10.0f);
+    glm::vec3 sphereCenter = blackhole.getPosition();
     radius = 50.0f;
-
-    std:: vector<std::vector<ParticleTrail>> trailPositions;
-    trailPositions.resize(5);
-    for (auto &trail : trailPositions) {
-        trail.reserve(1000);
-    }
-
-    std:: vector<glm::vec3> sphereOrigins;
-    //"translations"
-    sphereOrigins.emplace_back(10.0f, 40.0f, 55.0f);
-    sphereOrigins.emplace_back(-15.0f, -12.0f, -23.0f);
-    sphereOrigins.emplace_back(-20.0f, 5.0f, -10.0f);
-    sphereOrigins.emplace_back(20.0f, 0.0f, 40.0f);
-    sphereOrigins.emplace_back(0.0f, 20.0f, -15.0f);
 
 
     GLFWwindow *window = createWindow();
@@ -188,7 +186,7 @@ int main() {
     glGenBuffers(1, &sphereVBO);
     glBindVertexArray(sphereVAO);
     glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-    glBufferData(GL_ARRAY_BUFFER, sphere.size() * sizeof(glm::vec3), sphere.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, blackhole.getMeshSize() * sizeof(glm::vec3), blackhole.getMeshData(), GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -198,7 +196,7 @@ int main() {
     glGenBuffers(1, &trailVBO);
     glBindVertexArray(trailVAO);
     glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-    glBufferData(GL_ARRAY_BUFFER, trailPositions.size() * sizeof(ParticleTrail), trailPositions.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, blackhole.getTrailSize() * sizeof(ParticleTrail), blackhole.getTrailData(), GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleTrail), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -282,67 +280,74 @@ int main() {
         velocity += acceleration;
         velocity *= deltaTime * 0.1;
 
-        sphereIndex = 0;
-        for (auto &currentPosition : sphereOrigins) {
-
-            currentPosition += velocity;
-
-            auto x = sphereCenter.x + (radius * std:: cosf(currentPosition.x));
-            auto y = (radius * std:: cosf(currentPosition.x)) + (sphereCenter.z + (radius * std:: sinf(currentPosition.z)));
-            auto z = sphereCenter.z + (radius * std:: sinf(currentPosition.z));
-
-            glm::vec3 pt = {x, y, z};
-
-            ParticleTrail currentTrailPosition;
-            currentTrailPosition.positon = pt;
-
-            if (trailPositions[sphereIndex].size() >= 1000) {
-                trailPositions[sphereIndex].erase(trailPositions[sphereIndex].begin());
-                trailPositions[sphereIndex].emplace_back(currentTrailPosition);
-            }
-            trailPositions[sphereIndex].emplace_back(currentTrailPosition);
-            sphereIndex++;
-        }
-
         glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-        glBufferData(GL_ARRAY_BUFFER, sphere.size() * sizeof(glm::vec3), sphere.data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, blackhole.getMeshSize() * sizeof(glm::vec3), blackhole.getMeshData(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
         glUniform3f(uColorLoc, 1.0f, 0.2f, 0.4f);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(sphere.size()));
+        glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(blackhole.getMeshSize()));
 
         sphereIndex = 0;
-        for (auto &sphereI : spheres) {
-            glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-            glBufferData(GL_ARRAY_BUFFER, sphereI.size() * sizeof(glm::vec3), sphereI.data(), GL_DYNAMIC_DRAW);
-
-            glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-            glBufferData(GL_ARRAY_BUFFER, trailPositions[sphereIndex].size() * sizeof(ParticleTrail), trailPositions[sphereIndex].data(), GL_DYNAMIC_DRAW);
-
-
-            if (trailPositions[sphereIndex].empty()) {
-                sphereIndex++;
-                continue;
-            }
-
-            sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), trailPositions[sphereIndex].back().positon);
-
-            glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
-            glBindVertexArray(sphereVAO);
-            if (sphereIndex == 0) glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
-            if (sphereIndex == 1) glUniform3f(uColorLoc, 0.0f, 1.0f, 0.0f);
-            if (sphereIndex == 2) glUniform3f(uColorLoc, 0.0f, 0.0f, 1.0f);
-            if (sphereIndex == 3) glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
-            if (sphereIndex == 4) glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(sphereI.size()));
-
-            glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
-            glBindVertexArray(trailVAO);
-            glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
-            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(trailPositions[sphereIndex].size()));
-
-            sphereIndex++;
-        }
+        // for (auto &currentPosition : sphereOrigins) {
+        //
+        //     currentPosition += velocity;
+        //
+        //     auto x = sphereCenter.x + (radius * std:: cosf(currentPosition.x));
+        //     auto y = (radius * std:: cosf(currentPosition.x)) + (sphereCenter.z + (radius * std:: sinf(currentPosition.z)));
+        //     auto z = sphereCenter.z + (radius * std:: sinf(currentPosition.z));
+        //
+        //     glm::vec3 pt = {x, y, z};
+        //
+        //     ParticleTrail currentTrailPosition;
+        //     currentTrailPosition.positon = pt;
+        //
+        //     if (trailPositions[sphereIndex].size() >= 1000) {
+        //         trailPositions[sphereIndex].erase(trailPositions[sphereIndex].begin());
+        //         trailPositions[sphereIndex].emplace_back(currentTrailPosition);
+        //     }
+        //     trailPositions[sphereIndex].emplace_back(currentTrailPosition);
+        //     sphereIndex++;
+        // }
+        //
+        // glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+        // glBufferData(GL_ARRAY_BUFFER, sphere.size() * sizeof(glm::vec3), sphere.data(), GL_DYNAMIC_DRAW);
+        // glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
+        // glBindVertexArray(sphereVAO);
+        // glUniform3f(uColorLoc, 1.0f, 0.2f, 0.4f);
+        // glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(sphere.size()));
+        //
+        // sphereIndex = 0;
+        // for (auto &sphereI : spheres) {
+        //     glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+        //     glBufferData(GL_ARRAY_BUFFER, sphereI.size() * sizeof(glm::vec3), sphereI.data(), GL_DYNAMIC_DRAW);
+        //
+        //     glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
+        //     glBufferData(GL_ARRAY_BUFFER, trailPositions[sphereIndex].size() * sizeof(ParticleTrail), trailPositions[sphereIndex].data(), GL_DYNAMIC_DRAW);
+        //
+        //
+        //     if (trailPositions[sphereIndex].empty()) {
+        //         sphereIndex++;
+        //         continue;
+        //     }
+        //
+        //     sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), trailPositions[sphereIndex].back().positon);
+        //
+        //     glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
+        //     glBindVertexArray(sphereVAO);
+        //     if (sphereIndex == 0) glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
+        //     if (sphereIndex == 1) glUniform3f(uColorLoc, 0.0f, 1.0f, 0.0f);
+        //     if (sphereIndex == 2) glUniform3f(uColorLoc, 0.0f, 0.0f, 1.0f);
+        //     if (sphereIndex == 3) glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
+        //     if (sphereIndex == 4) glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        //     glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(sphereI.size()));
+        //
+        //     glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
+        //     glBindVertexArray(trailVAO);
+        //     glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
+        //     glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(trailPositions[sphereIndex].size()));
+        //
+        //     sphereIndex++;
+        // }
 
         glfwPollEvents();
         glfwSwapBuffers(window);
