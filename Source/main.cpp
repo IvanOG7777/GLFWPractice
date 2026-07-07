@@ -107,6 +107,7 @@ int main() {
     }
 
     glm::mat4 translationSphere = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)); // translates to world space
+    glm::mat4 translationGrid = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 
     int sphereIndex = 0;
@@ -119,6 +120,8 @@ int main() {
 
     glm::mat4 sphereMVP;
     glm::mat4 trailMVP;
+    glm::mat4 gridMVP;
+
     glm::vec3 acceleration = {5.0f, 5.0f, 5.0f};
     glm::vec3 velocity = {20.0f, 5.0f, 2.0f};
 
@@ -126,6 +129,8 @@ int main() {
 
     glm::vec3 sphereCenter = blackhole.getPosition();
     radius = 50.0f;
+
+    auto threeDGrid = makeGrid3D(100,100,100, 10,10,10);
 
 
     GLFWwindow *window = createWindow();
@@ -141,8 +146,8 @@ int main() {
     glfwSetCursorPosCallback(window, cursorPositionCallback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    GLuint sphereVAO = 0, trailVAO = 0;
-    GLuint sphereVBO = 0, trailVBO = 0;
+    GLuint sphereVAO = 0, trailVAO = 0, gridVAO = 0;
+    GLuint sphereVBO = 0, trailVBO = 0, gridVBO = 0;
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertexShader, nullptr);
@@ -195,6 +200,16 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
     glBufferData(GL_ARRAY_BUFFER, blackhole.getTrailSize() * sizeof(ParticleTrail), blackhole.getTrailData(), GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleTrail), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    glGenVertexArrays(1, &gridVAO);
+    glGenBuffers(1, &gridVBO);
+    glBindVertexArray(gridVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+    glBufferData(GL_ARRAY_BUFFER, threeDGrid.size() * sizeof(glm::vec3), threeDGrid.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -273,9 +288,17 @@ int main() {
 
         sphereMVP = projection * view * translationSphere;
         trailMVP = projection * view * glm::mat4(1.0f);
+        gridMVP = projection * view * translationSphere;
 
         velocity += acceleration;
         velocity *= deltaTime * 0.1;
+
+        glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+        glBufferData(GL_ARRAY_BUFFER, threeDGrid.size() * sizeof(glm::vec3), threeDGrid.data(), GL_DYNAMIC_DRAW);
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(gridMVP));
+        glBindVertexArray(gridVAO);
+        glUniform3f(uColorLoc, 1.0f, 0.2f, 0.4f);
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(threeDGrid.size()));
 
         glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
         glBufferData(GL_ARRAY_BUFFER, blackhole.getMeshSize() * sizeof(glm::vec3), blackhole.getMeshData(), GL_DYNAMIC_DRAW);
@@ -293,7 +316,7 @@ int main() {
             sphereI.setPhase(phase);
 
             auto x = sphereCenter.x + (radius * std:: cosf(phase.x));
-            auto y = (radius * std:: cosf(phase.x)) + (sphereCenter.z + (radius * std:: sinf(phase.z)));
+            auto y = sphereCenter.y + 20;
             auto z = sphereCenter.z + (radius * std:: sinf(phase.z));
 
             glm::vec3 pt = {x, y, z};
